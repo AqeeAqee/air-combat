@@ -16,15 +16,15 @@ adds/changes:
 add title scene (handmade)
 add progress bar
 change 2nd player plane to green
-add player's spawn/ level begin/level complete ani & behaviors
+add player's spawn/ level begin/level complete behaviors with animations
 add new weapon, yellow icon, bullets concentrated
 add 5th weapon level, extra bullets shooting backward
-anymore powerup at 5th weapon level, will kill all-in-screen, like bomb.
+anymore powerup at 5th weapon level, will kill all-in-screen, like a bomb.
 2s ghost time after spawn
 add hitting sound, even didn't destroyed enemy
 change powerups droping from screen top
 pump away from enemy instead of random direction
-pump away only hit but didn't dead
+pump away occured only be hit but didn't dead
 commented hardcore mode
 
 fix:

@@ -312,9 +312,9 @@ class Player extends SpriteWrapper.Support {
                 // }
                 info.changeLifeBy(-1);
                 this.showLifeLights();
+                this.dead()
                 music.playSound("G5:1 E5:1 C5:2");
 
-                this.dead()
                 if (info.life() > 0) {
                     this.spawn()
                     this.makeGhostTime() //aqee, add ghost time
@@ -345,13 +345,9 @@ class Player extends SpriteWrapper.Support {
         this.sprite.setFlag(SpriteFlag.Invisible, true)
         for (let i = 0; i <= 20; i++) {
             setTimeout(() => {
-                this.sprite.flags ^ SpriteFlag.Invisible
-                // this.sprite.setFlag(SpriteFlag.Invisible, !(this.sprite.flags & SpriteFlag.Invisible))
+                this.sprite.flags ^= SpriteFlag.Invisible
             }, i * 100)
         }
-        setTimeout(() => { //ensure visible
-            this.moveByController(true)
-        }, 600)
         setTimeout(() => { //ensure visible
             this.sprite.setFlag(SpriteFlag.Invisible, false)
         }, 2100)
@@ -369,7 +365,9 @@ class Player extends SpriteWrapper.Support {
         this.sprite.fy = 500
         this.sprite.setFlag(SpriteFlag.StayInScreen, true)
         this.sprite.setFlag(SpriteFlag.Invisible, false)
-        this.moveByController(true)
+        setTimeout(() => { //ensure visible
+            this.moveByController(true)
+        }, 500)
     }
 
     levelCompleted() {
@@ -394,15 +392,15 @@ namespace Players {
 
     export function addPlayerOne() {
         players.push(new Player(1));
-        players[0].spawnX = scene.screenWidth() / 2
         players[0].dead()
+        players[0].spawnX = scene.screenWidth() / 2
         init();
     }
     export function addPlayerTwo() {
         players.push(new Player(2));
         players[1].dead()
-        players[0].spawnX = scene.screenWidth() / 2 - 20
-        players[1].spawnX = scene.screenWidth() / 2 + 20
+        players[0].spawnX = scene.screenWidth() / 2 - 30
+        players[1].spawnX = scene.screenWidth() / 2 + 30
     }
 
     export function randomPlayer() {
