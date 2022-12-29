@@ -1,7 +1,4 @@
 namespace SpriteKind {
-    export const Powerup = SpriteKind.create()
-    export const BombPowerup = SpriteKind.create()
-    export const LifePowerup = SpriteKind.create()
     export const EnemyProjectile = SpriteKind.create()
 }
 
@@ -12,18 +9,18 @@ function angleBetween(sprite1: Sprite, sprite2: Sprite): number {
     return a;
 }
 
-function vComponents(v: number, angle: number): {vx: number, vy: number} {
+function vComponents(v: number, angle: number): { vx: number, vy: number } {
     const vy = v * Math.cos(angle);
     const vx = v * Math.sin(angle);
-    return {vx, vy};
+    return { vx, vy };
 }
 
 function toRadian(degrees: number) {
-    return degrees * (Math.PI/180);
+    return degrees * (Math.PI / 180);
 }
 
 function toDegrees(rad: number) {
-    return rad * (180/Math.PI);
+    return rad * (180 / Math.PI);
 }
 
 enum Direction { UP, LEFT, DOWN, RIGHT };
@@ -68,7 +65,7 @@ function rotate(img: Image, direction: Direction): Image {
 }
 
 function rotate45(img: Image, img45: Image, angleDegrees: number): Image {
-    switch(angleDegrees) {
+    switch (angleDegrees) {
         case 180:
         case -180:
             return rotateImage(img, 180);
@@ -145,7 +142,7 @@ interface AbsolutMovement {
     startX: number;
     startY: number;
     vx: number;
-    vy: number; 
+    vy: number;
 }
 
 type Movement = AbsolutMovement | RelativeMovement;
@@ -153,14 +150,14 @@ type Movement = AbsolutMovement | RelativeMovement;
 function isRelativeMovement(mov: Movement): mov is RelativeMovement {
     return (mov as RelativeMovement).direction !== undefined;
 }
-        
+
 function isAbsoluteMovement(mov: Movement): mov is AbsolutMovement {
     return (mov as AbsolutMovement).startX !== undefined;
 }
 
 abstract class BaseObject extends SpriteWrapper.Support {
     protected movement: Movement;
-    private intervalFunctions: { (): void; } [] = [];
+    private intervalFunctions: { (): void; }[] = [];
 
     private static createSprite(image: Image, mov: Movement): Sprite {
         let sprite: Sprite = undefined;
@@ -183,13 +180,13 @@ abstract class BaseObject extends SpriteWrapper.Support {
                     vy = -mov.v;
                     break;
                 case Direction.LEFT:
-                    x = scene.screenWidth() + image.width / 2 - 2;
+                    x = scene.screenWidth() + image.height / 2 - 2; //aqee, width->height, transposed
                     y = mov.pos;
                     vx = -mov.v;
                     vy = 0;
                     break;
                 case Direction.RIGHT:
-                    x = -image.width / 2 + 2;
+                    x = -image.height / 2 + 2; //aqee, width->height, transposed
                     y = mov.pos;
                     vx = mov.v;
                     vy = 0;
@@ -204,7 +201,7 @@ abstract class BaseObject extends SpriteWrapper.Support {
             sprite.setPosition(mov.startX, mov.startY);
             sprite.setVelocity(mov.vx, mov.vy);
         }
-        
+
         sprite.setFlag(SpriteFlag.AutoDestroy, true);
         return sprite;
     }
@@ -227,6 +224,7 @@ abstract class BaseObject extends SpriteWrapper.Support {
 abstract class BaseEnemy extends BaseObject {
     protected remainingHits: number = hardcore ? 1 : 2;
     protected hits: number = hardcore ? 1 : 2;
+    protected effectStarted = false
 
     constructor(image: Image, mov: Movement, hits: number = 1) {
         super(image, mov);
@@ -236,9 +234,9 @@ abstract class BaseEnemy extends BaseObject {
     }
 
     public getScore(): number {
-        return 10;  
+        return 10;
     }
-    
+
     public gotHitBy(projectile?: Sprite): void {
         if (projectile && projectile.kind() === SpriteKind.BombPowerup) {
             this.remainingHits = Math.max(this.remainingHits - 11, 0);
@@ -250,8 +248,13 @@ abstract class BaseEnemy extends BaseObject {
             this.sprite.destroy(effects.fire, 100);
             info.changeScoreBy(this.getScore())
             music.playSound("C4:1");
-        } else if (this.remainingHits < this.hits / 2) {
-            this.sprite.startEffect(effects.fire);
+        } else {
+            //aqee, add hit sound
+            music.playTone(Note.C - 4 * this.remainingHits, BeatFraction.Double)
+            if ((this.remainingHits < this.hits / 2) && !this.effectStarted) {
+                this.effectStarted = true //aqee, avoid repeate fire effect, especially on battleShip
+                this.sprite.startEffect(effects.fire);
+            }
         }
 
         if (projectile && projectile.kind() === SpriteKind.Projectile) {
@@ -356,12 +359,12 @@ class AntiAircraftMissile extends Plane implements Enemy {
     private timeout3: number = 0;
 
     constructor(x: number, y: number) {
-        super(AntiAircraftMissile.image, { startX: x, startY: y, vx: 0, vy: 0});
+        super(AntiAircraftMissile.image, { startX: x, startY: y, vx: 0, vy: 0 });
 
         this.recalc(20);
 
         this.timeout1 = setTimeout(() => this.recalc(30), 1000);
-        this.timeout2 = setTimeout(() => this.recalc(40), 2000);   
+        this.timeout2 = setTimeout(() => this.recalc(40), 2000);
         this.timeout3 = setTimeout(() => this.recalc(50), 3000);
     }
 
@@ -371,13 +374,13 @@ class AntiAircraftMissile extends Plane implements Enemy {
         this.sprite.setVelocity(r.vx, r.vy);
     }
 
-    public static calc(sprite1: Sprite, sprite2: Sprite, v: number): {image: Image, vx: number, vy :number} {
+    public static calc(sprite1: Sprite, sprite2: Sprite, v: number): { image: Image, vx: number, vy: number } {
         let a = angleBetween(sprite1, sprite2);
         // Align to 45° angles
         const degrees = Math.round(toDegrees(a) / 45) * 45;
         a = toRadian(degrees);
         const vc = vComponents(v, a);
-        return {image: rotate45(AntiAircraftMissile.image, AntiAircraftMissile.image45, degrees), vx: vc.vx, vy: vc.vy};
+        return { image: rotate45(AntiAircraftMissile.image, AntiAircraftMissile.image45, degrees), vx: vc.vx, vy: vc.vy };
     }
 
 
@@ -570,7 +573,7 @@ class GrayPlane extends Plane implements Enemy {
         c f c
         . c .
     `;
-    
+
     private static readonly image: Image = img`
         . . . 2 4 2 . . . . 2 4 2 . . .
         . b b 6 6 6 6 6 6 6 6 6 6 6 6 .
@@ -597,8 +600,8 @@ class GrayPlane extends Plane implements Enemy {
 
     private shoot(): void {
         if (isRelativeMovement(this.movement)) {
-            let vx =  50 * Math.sign(this.sprite.vx);
-            let vy =  50 * Math.sign(this.sprite.vy);
+            let vx = 50 * Math.sign(this.sprite.vx);
+            let vy = 50 * Math.sign(this.sprite.vy);
             let ax = 200 * Math.sign(this.sprite.vx);
             let ay = 200 * Math.sign(this.sprite.vy);
 
@@ -615,7 +618,7 @@ class GrayPlane extends Plane implements Enemy {
             // Make sure the projectile is on the screen so
             // that it does not get auto destoryed immediately
             let x = projectile.x, y = projectile.y;
-            switch(this.movement.direction) {
+            switch (this.movement.direction) {
                 case Direction.DOWN: y = 1; break;
                 case Direction.UP: y = scene.screenHeight(); break;
                 case Direction.LEFT: x = scene.screenWidth(); break;
@@ -637,29 +640,29 @@ class BigPlane extends Plane implements Enemy {
         5 2 5
     `;
     private static readonly image: Image = img`
-        . . . . . . . . . . . 7 7 7 . . . . . . . . . .
-        . . . . . . . . 7 7 7 7 7 7 7 7 7 . . . . . . .
-        . . . . . . . . b b b 7 7 7 b b b . . . . . . .
-        . . . . . . . . . . . 7 7 7 . . . . . . . . . .
-        . . . . . . . . . . . 7 7 7 . . . . . . . . . .
-        . . . . . . . . . . . 7 7 7 . . . . . . . . . .
-        . . . . . . . . . . . 7 7 7 . . . . . . . . . .
-        . . . . . . . . . . . 7 7 7 . . . . . . . . . .
-        . . . . . . . . . . b 7 2 7 d . . . . . . . . .
-        . . . . . . . . b b 7 2 7 2 7 d d . . . . . . .
-        . . . . . b b b 7 7 7 7 7 7 7 7 7 d d d . . . .
-        . b b b b 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 d d d .
-        b 7 7 7 7 7 7 b b b b 7 7 7 d d d d 7 7 7 7 7 d
-        . . . . . . 7 7 7 7 7 7 7 7 7 7 7 7 7 . . . . .
-        . . . . . . . 7 . . . 2 7 2 . . . 7 . . . . . .
-        . . . . . b 9 9 9 1 . 7 2 7 . b 9 9 9 1 . . . .
-        . . . . . . . . . . . 2 7 2 . . . . . . . . . .
-        . . . . . . . . . . . . 2 . . . . . . . . . . .
+        ...........777..........
+        ........777777777.......
+        ........bbb777bbb.......
+        ...........777..........
+        ...........777..........
+        ...........777..........
+        ...........777..........
+        ...........777..........
+        ..........b727d.........
+        ........bb72727dd.......
+        .....bbb777777777ddd....
+        .bbbb777777777777777ddd.
+        b777777bbbb777dddd77777d
+        ......7777777777777.....
+        .......7...272...7......
+        .....b9991.727.b9991....
+        ...........272..........
+        ............2...........
     `;
 
     constructor(mov: Movement) {
         super(BigPlane.image, mov, 3);
-        this.sprite.z = cloudZ - 15; // below the clouds
+        this.sprite.z = cloudZ //- 15; // below the clouds
         this.shoot();
         this.onUpdateInterval(1500, () => {
             this.shoot();
@@ -667,8 +670,8 @@ class BigPlane extends Plane implements Enemy {
     }
 
     private shoot(): void {
-        let vx =  70 * Math.sign(this.sprite.vx);
-        let vy =  70 * Math.sign(this.sprite.vy);
+        let vx = 70 * Math.sign(this.sprite.vx);
+        let vy = 70 * Math.sign(this.sprite.vy);
         const projectile = sprites.createProjectile(BigPlane.projectileImage, vx, vy, SpriteKind.EnemyProjectile, this.sprite);
         projectile.setPosition(Math.max(projectile.x, 0), Math.max(projectile.y, 0));
     }
@@ -788,105 +791,105 @@ class BattleShip extends Ship implements Enemy {
         5 4 5
     `;
     private static readonly image: Image = img`
-        . . . . . . . . 1 . 1 . 1 . . . . . . . . . . . . . . 1 . 1 . 1 . . . . . . . .
-        . . . . . . . 1 . 1 . 1 . 1 . . . . . . . . . . . . 1 . 1 . 1 . 1 . . . . . . .
-        . . . . . . . . 1 . 1 . 1 . . . . . . . . . . . . . . 1 . 1 . 1 . . . . . . . .
-        . . . . . . . 1 . 1 . 1 . 1 . . . . . . . . . . . . 1 . 1 . 1 . 1 . . . . . . .
-        . . . . . . . . 1 . 1 . 1 . . . . . . . . . . . . . . 1 . 1 . 1 . . . . . . . .
-        . . . . . . . 1 . 1 . 1 . 1 . . . . . . . . . . . . 1 . 1 . 1 . 1 . . . . . . .
-        . . . . . . . . 1 . 1 . 1 . . . . . . . . . . . . . . 1 . 1 . 1 . . . . . . . .
-        . . . . . . . 1 . 1 . 1 . 1 . . . . . . . . . . . . 1 . 1 . 1 . 1 . . . . . . .
-        . . . . . . . . 1 . 1 . 1 . . . . . . . . . . . . . . 1 . 1 . 1 . . . . . . . .
-        . . . 1 . . . 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 . . 1 . . . .
-        . . . . . 1 6 6 d 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 d 6 6 1 . . . . .
-        . . . . . . 6 6 d d d d d d d d d d d d d d d d d d d d d d d d 6 6 . . . . . .
-        . . . . 1 . 6 6 d 6 6 c b b b b b b b b b b b b b b b b c 6 6 d 6 6 . 1 . . . .
-        . . . . . 1 6 6 d 6 6 c d d d d d f f d d f f d d d d d c 6 6 d 6 6 1 . . . . .
-        . . . . . . 6 6 d 6 6 c d d d d d d d d d d d d d d d d c 6 6 d 6 6 . . . . . .
-        . . . . 1 . 6 6 d 6 6 c d d 2 d d 1 1 1 1 1 1 d d 2 d d c 6 6 d 6 6 . 1 . . . .
-        . . . 1 . 1 6 6 d 6 6 c d d d d 1 d d d d d d 1 d d d d c 6 6 d 6 6 1 . 1 . . .
-        . . . . 1 6 6 6 d 6 6 c d d d 1 d d d d d d d d 1 d d d b c 6 6 d 6 6 1 . . . .
-        . . . . . 6 6 d 6 6 c b d d 1 d d d 1 d d 1 d d d 1 d d b c 6 6 d 6 6 . . . . .
-        . . . 1 . 6 6 d 6 6 c b d d 1 d d d 1 d d 1 d d d 1 d d d c 6 6 d 6 6 . 1 . . .
-        . . . . 1 6 6 d 6 6 c d d d 1 d d d 1 1 1 1 d d d 1 d d d c 6 6 d 6 6 1 . . . .
-        . . . . . 6 6 d 6 6 c d d d 1 d d d 1 1 1 1 d d d 1 d d d c 6 6 d 6 6 . . . . .
-        . . . 1 . 6 6 d 6 6 c d f d 1 d d d 1 d d 1 d d d 1 d f d c 6 6 d 6 6 . 1 . . .
-        . . . . 1 6 6 d 6 6 c d f d 1 d d d 1 d d 1 d d d 1 d f d c 6 6 d 6 6 1 . . . .
-        . . . . . 6 6 d 6 6 c d d d d 1 d d d d d d d d 1 d d d d c 6 6 d 6 6 . . . . .
-        . . . 1 . 6 6 d 6 6 c d d d d d 1 d d d d d d 1 d d d d d c 6 6 d 6 6 . 1 . . .
-        . . . . 1 6 6 d 6 6 c d d d 2 d d 1 1 1 1 1 1 d d 2 d d d c 6 6 d 6 6 1 . . . .
-        . . 1 . 6 6 6 d 6 6 c d d d d d d d d d d d d d d d d d d c 6 6 d 6 6 6 . 1 . .
-        . . . 1 6 6 d 6 6 c b d d a b b b b b b b b b b b b 6 d d b c 6 6 d 6 6 1 . . .
-        . . . . 6 6 d 6 6 c b d a b b b b b b b b b b b b b b 6 d b c 6 6 d 6 6 . . . .
-        . . 1 . 6 6 d 6 6 c d d a b 3 1 3 b b b b b b 3 1 3 b 6 d d c 6 6 d 6 6 . 1 . .
-        . . . 1 6 6 d 6 6 c d d a b 1 1 1 b b 2 2 b b 1 1 1 b 6 d d c 6 6 d 6 6 1 . . .
-        . . . . 6 6 d 6 6 c d d a b 3 1 3 b b b b b b 3 1 3 b 6 d d c 6 6 d 6 6 . . . .
-        . . 1 . 6 6 d 6 6 c d d a b b b b b 1 b 1 b b b b b b 6 d d c 6 6 d 6 6 . 1 . .
-        . . . 1 6 6 d 6 6 c d d a b b 2 b b b 1 b 1 b b 2 b b 6 d d c 6 6 d 6 6 1 . . .
-        . . . . 6 6 d 6 6 c d d a b b 2 b b 1 b 1 b b b 2 b b 6 d d c 6 6 d 6 6 . . . .
-        . . 1 . 6 6 d 6 6 c d d a b b b b b b 1 b 1 b b b b b 6 d d c 6 6 d 6 6 . 1 . .
-        . . . 1 6 6 d 6 6 c d d a b 3 7 3 b b b b b b 3 7 3 b 6 d d c 6 6 d 6 6 1 . . .
-        . . . . 6 6 d 6 6 c d d a b 7 7 7 b b 2 2 b b 7 7 7 b 6 d d c 6 6 d 6 6 . . . .
-        . . 1 . 6 6 d 6 6 c d d a b 3 7 3 b b b b b b 3 7 3 b 6 d d c 6 6 d 6 6 . 1 . .
-        . . . 1 6 6 d 6 6 c d d a b b b b b b b b b b b b b b 6 d d c 6 6 d 6 6 1 . . .
-        . . . . 6 6 d 6 6 c d d d a b b b b b b b b b b b b 6 d d d c 6 6 d 6 6 . . . .
-        . . 1 . 6 6 d 6 6 c d 7 d d d d d d d d d d d d d d d d 7 d c 6 6 d 6 6 . 1 . .
-        . . . 1 6 6 d 6 6 c d d d d d f d f d f d f d f d f d d d d c 6 6 d 6 6 1 . . .
-        . . . . 6 6 d 6 6 c d e 4 d f d f d f d f d f d f d d e 4 d c 6 6 d 6 6 . . . .
-        . . . . 6 6 d 6 6 c d e e d d f d f d f d f d f d f d e 4 d c 6 6 d 6 6 . . . .
-        . . 1 . 6 6 d 6 6 c d e 4 d f d f d f d f d f d f d d e e d c 6 6 d 6 6 . 1 . .
-        . . . 1 6 6 d 6 6 c d e 4 d d f d f d f d f d f d f d e 4 d c 6 6 d 6 6 1 . . .
-        . . . . 6 6 d 6 6 c d e 4 d d d d d d d d d d d d d d e 4 d c 6 6 d 6 6 . . . .
-        . . 1 . 6 6 d 6 6 c d e 4 d d a b b b b b b b b 6 d d e 4 d c 6 6 d 6 6 . 1 . .
-        . . . 1 6 6 d 6 6 c d e e d a b 6 6 6 6 6 6 6 6 b 6 d e e d c 6 6 d 6 6 1 . . .
-        . . . . 6 6 d 6 6 c d e 4 d a b 6 6 6 6 6 6 6 6 b 6 d e 4 d c 6 6 d 6 6 . . . .
-        . . 1 . 6 6 d 6 6 c d e 4 d a b 6 f f 6 6 f f 6 b 6 d e 4 d c 6 6 d 6 6 . 1 . .
-        . . . . 6 6 d 6 6 c d e 4 d a b 6 f f 6 6 f f 6 b 6 d e 4 d c 6 6 d 6 6 . . . .
-        . . . 1 6 6 d 6 6 c d e e d a b b f f b b f f b b 6 d e e d c 6 6 d 6 6 1 . . .
-        . . 1 . 6 6 d 6 6 c d e 4 d a b b f f b b f f b b 6 d e 4 d c 6 6 d 6 6 . 1 . .
-        . 1 . 1 6 6 d 6 6 c d e 4 d a b b f f b b f f b b 6 d e 4 d c 6 6 d 6 6 1 . 1 .
-        . . 1 . 6 6 d 6 6 c d e 4 d a b b 2 2 b b 2 2 b b 6 d e 4 d c 6 6 d 6 6 . 1 . .
-        . 1 . 1 6 6 d 6 6 c d e e d a b b b b b b b b b b 6 d e e d c 6 6 d 6 6 1 . 1 .
-        . . 1 . 6 6 d 6 6 c d e 4 d a b 8 8 8 8 8 8 8 8 b 6 d e 4 d c 6 6 d 6 6 . 1 . .
-        . 1 . 1 6 6 d 6 6 c d e 4 d d a b b b b b b b b 6 d d e 4 d c 6 6 d 6 6 1 . 1 .
-        . . 1 . 6 6 d 6 6 c d e 4 d d d d d d d d d d d d d d e 4 d c 6 6 d 6 6 . 1 . .
-        . 1 . 1 6 6 d 6 6 c d e e d d b d d a b b 6 d d b d d e e d c 6 6 d 6 6 1 . 1 .
-        1 . 1 . 6 6 d 6 6 c d e 4 d d b d d b f f b d d b d d e 4 d c 6 6 d 6 6 . 1 . 1
-        . 1 . 1 6 6 d 6 6 c d e 4 d d b d d b f f b d d b d d e 4 d c 6 6 d 6 6 1 . 1 .
-        1 . 1 . 6 6 d 6 6 c d e 4 d d d d d a b b 6 d d d d d e 4 d c 6 6 d 6 6 . 1 . 1
-        . 1 . 1 . 6 d 6 6 c d d d d d d d d d d d d d d d d d d d d c 6 6 d 6 . 1 . 1 .
-        1 . 1 . 1 6 d 6 6 c b d d e 4 d b d a b b 6 d b d e 4 d d b c 6 6 d 6 1 . 1 . 1
-        . 1 . 1 . 6 d 6 6 c b d d e e d b d b f f b d b d e e d d b c 6 6 d 6 . 1 . 1 .
-        1 . 1 . 1 6 6 d 6 6 c d d e 4 d b d b f f b d b d e 4 d d c 6 6 d 6 6 1 . 1 . 1
-        . 1 . 1 . 6 6 d 6 6 c d d e e d d d a b b 6 d d d e e d d c 6 6 d 6 6 . 1 . 1 .
-        . . 1 . 1 . 6 d 6 6 c b d e 4 d d d d d d d d d d e 4 d b c 6 6 d 6 . 1 . 1 . .
-        . . . 1 . 1 6 6 d 6 6 c d d d d d d d d d d d d d d d d c 6 6 d 6 6 1 . 1 . . .
-        . . . . 1 . 6 6 d 6 6 c b d d b f b d a b d b f b d d b c 6 6 d 6 6 . 1 . . . .
-        . . . . . 1 . 6 d 6 6 c b d d d d d d a b d d d d d d b c 6 6 d 6 . 1 . . . . .
-        . . . . 1 . 1 6 6 d 6 6 c d d d d d d d d d d d d d d c 6 6 d 6 6 1 . 1 . . . .
-        . . . . . 1 . 6 6 d 6 6 c b d d d d d d d d d d d d b c 6 6 d 6 6 . 1 . . . . .
-        . . . . . . 1 . 6 6 d 6 6 c d d d b d a b d b d d d c 6 6 d 6 6 . 1 . . . . . .
-        . . . . . . . . 6 6 d 6 6 c b d d d d a b d d d d b c 6 6 d 6 6 . . . . . . . .
-        . . . . . . . 1 . 6 6 d 6 6 c d d d d d d d d d d c 6 6 d 6 6 . 1 . . . . . . .
-        . . . . . . . . . 6 6 d 6 6 c b d d d d d d d d b c 6 6 d 6 6 . . . . . . . . .
-        . . . . . . . . 1 . 6 6 d 6 6 c d d d b b d d d c 6 6 d 6 6 . 1 . . . . . . . .
-        . . . . . . . . . . 6 6 d 6 6 c b d d d d d d b c 6 6 d 6 6 . . . . . . . . . .
-        . . . . . . . . . 1 . 6 6 d 6 6 c d d b b d d c 6 6 d 6 6 . 1 . . . . . . . . .
-        . . . . . . . . . . . 6 6 d d 6 c b d d d d b c 6 6 d 6 6 . . . . . . . . . . .
-        . . . . . . . . . . 1 . 6 6 d 6 6 c d d d d c 6 6 d 6 6 . 1 . . . . . . . . . .
-        . . . . . . . . . . . . 6 6 d 6 6 c b d d b c 6 6 d 6 6 . . . . . . . . . . . .
-        . . . . . . . . . . . 1 . 6 6 d 6 6 c d d c 6 6 d 6 6 . 1 . . . . . . . . . . .
-        . . . . . . . . . . . . . 6 6 d 6 6 c b b c 6 6 d 6 6 . . . . . . . . . . . . .
-        . . . . . . . . . . . . 1 . 6 6 d 6 6 c c 6 6 d 6 6 . 1 . . . . . . . . . . . .
-        . . . . . . . . . . . . . . 6 6 d 6 6 c c 6 6 d 6 6 . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . 1 . 6 6 d 6 6 6 6 d 6 6 . 1 . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . 6 6 d 6 6 6 6 d 6 6 . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . 1 . 6 6 d 6 6 d 6 6 . 1 . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . 6 6 d 6 6 d 6 6 . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . 1 . 6 6 d d 6 6 . 1 . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . 6 6 d d 6 6 . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . 6 6 6 6 . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . 6 6 6 6 . . . . . . . . . . . . . . . . . .
+        ........1.1.1..............1.1.1........
+        .......1.1.1.1............1.1.1.1.......
+        ........1.1.1..............1.1.1........
+        .......1.1.1.1............1.1.1.1.......
+        ........1.1.1..............1.1.1........
+        .......1.1.1.1............1.1.1.1.......
+        ........1.1.1..............1.1.1........
+        .......1.1.1.1............1.1.1.1.......
+        ........1.1.1..............1.1.1........
+        ...1...66666666666666666666666666..1....
+        .....166d6666666666666666666666d661.....
+        ......66dddddddddddddddddddddddd66......
+        ....1.66d66cbbbbbbbbbbbbbbbbc66d66.1....
+        .....166d66cdddddffddffdddddc66d661.....
+        ......66d66cddddddddddddddddc66d66......
+        ....1.66d66cdd2dd111111dd2ddc66d66.1....
+        ...1.166d66cdddd1dddddd1ddddc66d661.1...
+        ....1666d66cddd1dddddddd1dddbc66d661....
+        .....66d66cbdd1ddd1dd1ddd1ddbc66d66.....
+        ...1.66d66cbdd1ddd1dd1ddd1dddc66d66.1...
+        ....166d66cddd1ddd1111ddd1dddc66d661....
+        .....66d66cddd1ddd1111ddd1dddc66d66.....
+        ...1.66d66cdfd1ddd1dd1ddd1dfdc66d66.1...
+        ....166d66cdfd1ddd1dd1ddd1dfdc66d661....
+        .....66d66cdddd1dddddddd1ddddc66d66.....
+        ...1.66d66cddddd1dddddd1dddddc66d66.1...
+        ....166d66cddd2dd111111dd2dddc66d661....
+        ..1.666d66cddddddddddddddddddc66d666.1..
+        ...166d66cbddabbbbbbbbbbbb6ddbc66d661...
+        ....66d66cbdabbbbbbbbbbbbbb6dbc66d66....
+        ..1.66d66cddab313bbbbbb313b6ddc66d66.1..
+        ...166d66cddab111bb22bb111b6ddc66d661...
+        ....66d66cddab313bbbbbb313b6ddc66d66....
+        ..1.66d66cddabbbbb1b1bbbbbb6ddc66d66.1..
+        ...166d66cddabb2bbb1b1bb2bb6ddc66d661...
+        ....66d66cddabb2bb1b1bbb2bb6ddc66d66....
+        ..1.66d66cddabbbbbb1b1bbbbb6ddc66d66.1..
+        ...166d66cddab373bbbbbb373b6ddc66d661...
+        ....66d66cddab777bb22bb777b6ddc66d66....
+        ..1.66d66cddab373bbbbbb373b6ddc66d66.1..
+        ...166d66cddabbbbbbbbbbbbbb6ddc66d661...
+        ....66d66cdddabbbbbbbbbbbb6dddc66d66....
+        ..1.66d66cd7dddddddddddddddd7dc66d66.1..
+        ...166d66cdddddfdfdfdfdfdfddddc66d661...
+        ....66d66cde4dfdfdfdfdfdfdde4dc66d66....
+        ....66d66cdeeddfdfdfdfdfdfde4dc66d66....
+        ..1.66d66cde4dfdfdfdfdfdfddeedc66d66.1..
+        ...166d66cde4ddfdfdfdfdfdfde4dc66d661...
+        ....66d66cde4dddddddddddddde4dc66d66....
+        ..1.66d66cde4ddabbbbbbbb6dde4dc66d66.1..
+        ...166d66cdeedab66666666b6deedc66d661...
+        ....66d66cde4dab66666666b6de4dc66d66....
+        ..1.66d66cde4dab6ff66ff6b6de4dc66d66.1..
+        ....66d66cde4dab6ff66ff6b6de4dc66d66....
+        ...166d66cdeedabbffbbffbb6deedc66d661...
+        ..1.66d66cde4dabbffbbffbb6de4dc66d66.1..
+        .1.166d66cde4dabbffbbffbb6de4dc66d661.1.
+        ..1.66d66cde4dabb22bb22bb6de4dc66d66.1..
+        .1.166d66cdeedabbbbbbbbbb6deedc66d661.1.
+        ..1.66d66cde4dab88888888b6de4dc66d66.1..
+        .1.166d66cde4ddabbbbbbbb6dde4dc66d661.1.
+        ..1.66d66cde4dddddddddddddde4dc66d66.1..
+        .1.166d66cdeeddbddabb6ddbddeedc66d661.1.
+        1.1.66d66cde4ddbddbffbddbdde4dc66d66.1.1
+        .1.166d66cde4ddbddbffbddbdde4dc66d661.1.
+        1.1.66d66cde4dddddabb6ddddde4dc66d66.1.1
+        .1.1.6d66cddddddddddddddddddddc66d6.1.1.
+        1.1.16d66cbdde4dbdabb6dbde4ddbc66d61.1.1
+        .1.1.6d66cbddeedbdbffbdbdeeddbc66d6.1.1.
+        1.1.166d66cdde4dbdbffbdbde4ddc66d661.1.1
+        .1.1.66d66cddeedddabb6dddeeddc66d66.1.1.
+        ..1.1.6d66cbde4dddddddddde4dbc66d6.1.1..
+        ...1.166d66cddddddddddddddddc66d661.1...
+        ....1.66d66cbddbfbdabdbfbddbc66d66.1....
+        .....1.6d66cbddddddabddddddbc66d6.1.....
+        ....1.166d66cddddddddddddddc66d661.1....
+        .....1.66d66cbddddddddddddbc66d66.1.....
+        ......1.66d66cdddbdabdbdddc66d66.1......
+        ........66d66cbddddabddddbc66d66........
+        .......1.66d66cddddddddddc66d66.1.......
+        .........66d66cbddddddddbc66d66.........
+        ........1.66d66cdddbbdddc66d66.1........
+        ..........66d66cbddddddbc66d66..........
+        .........1.66d66cddbbddc66d66.1.........
+        ...........66dd6cbddddbc66d66...........
+        ..........1.66d66cddddc66d66.1..........
+        ............66d66cbddbc66d66............
+        ...........1.66d66cddc66d66.1...........
+        .............66d66cbbc66d66.............
+        ............1.66d66cc66d66.1............
+        ..............66d66cc66d66..............
+        .............1.66d6666d66.1.............
+        ...............66d6666d66...............
+        ..............1.66d66d66.1..............
+        ................66d66d66................
+        ...............1.66dd66.1...............
+        .................66dd66.................
+        ..................6666..................
+        ..................6666..................
     `;
 
     constructor(mov: Movement) {
@@ -1050,9 +1053,9 @@ class Island extends BaseObject implements Element {
 }
 
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (projectile, enemiesprite) {
-    const plane: Enemy = SpriteWrapper.fromSprite(enemiesprite) as Enemy;
-    if (plane) {
-        plane.gotHitBy(projectile);
+    const enemy: Enemy = SpriteWrapper.fromSprite(enemiesprite) as Enemy;
+    if (enemy) {
+        enemy.gotHitBy(projectile);
     }
 })
 

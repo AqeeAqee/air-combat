@@ -1,40 +1,34 @@
-const hardcore: boolean = game.ask("Hardcore mode?");
+game.stats = true
+const hardcore: boolean = false //game.ask("Hardcore mode?");
 
-const MULTIPLAYER_ENABLED = control.ramSize() > 1024 * 400;
-const twoPlayerMode: boolean = MULTIPLAYER_ENABLED && game.ask("Two player mode?");
-
-light.setBrightness(7);
-light.setLength(5);
+// light.setBrightness(7);
+// light.setLength(5);
 scene.setBackgroundColor(9);
 
-Players.addPlayerOne();
-if (twoPlayerMode) {
-    Players.addPlayerTwo();
-}
-
-const powerUp = new PowereUp(img`
-    . . . . . . . .
-    . . 7 7 7 7 7 .
-    . 7 7 1 1 1 7 7
-    . 7 7 1 7 1 7 7
-    . 7 7 1 1 1 7 7
-    . 7 7 1 7 7 7 7
-    . 7 7 1 7 7 7 7
-    . . 7 7 7 7 7 .
-`, SpriteKind.Powerup, 3000, 50);
-const bombPowerUp = new PowereUp(img`
-    . 6 6 6 6 . . c
-    6 6 6 6 6 6 c .
-    . b b b b . . c
-`, SpriteKind.BombPowerup, 10000, 50);
-const lifePowerUp = new PowereUp(img`
-    . 2 2 . . 2 2 .
-    2 2 2 2 2 2 3 2
-    2 2 2 2 2 3 2 2
-    c 2 2 2 2 2 2 2
-    . c 2 2 2 2 2 .
-    . . c 2 2 2 . .
-    . . . c 2 . . .
-`, SpriteKind.LifePowerup, 10000, 40);
-
 StoryBook.play();
+
+
+//////////////////////////////////
+/** Change Log
+ *
+2022-12, Aqee Li
+adds/changes:
+add title scene (handmade)
+add progress bar
+change 2nd player plane to green
+add player's spawn/ level begin/level complete ani & behaviors
+add new weapon, yellow icon, bullets concentrated
+add 5th weapon level, extra bullets shooting backward
+anymore powerup at 5th weapon level, will kill all-in-screen, like bomb.
+2s ghost time after spawn
+add hitting sound, even didn't destroyed enemy
+change powerups droping from screen top
+pump away from enemy instead of random direction
+pump away only hit but didn't dead
+commented hardcore mode
+
+fix:
+bigplane missing when moving left/right: w/h should swap after transposed image
+perf tune, avoid set fire effect of enemy repeatly
+
+ */
