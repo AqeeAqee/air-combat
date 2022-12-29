@@ -14,7 +14,7 @@ StoryBook.play();
 2022-12, Aqee Li
 adds/changes:
 add title scene (handmade)
-add progress bar
+add progress bar, diff colors for each kind of enemies
 change 2nd player plane to green
 add player's spawn/ level begin/level complete behaviors with animations
 add new weapon, yellow icon, bullets concentrated

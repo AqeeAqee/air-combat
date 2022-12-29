@@ -6,6 +6,7 @@ namespace StoryBook {
 
     interface Event {
         t: number;
+        color:number;
         createElement(): void;
     }
 
@@ -17,7 +18,7 @@ namespace StoryBook {
         offset?: number;
         direction?: Direction;
         times?: number;
-        element: (mov: Movement) => void;
+        element: { color:number, create:(mov: Movement) => void};
     }
 
     interface Level {
@@ -74,7 +75,8 @@ namespace StoryBook {
                     this.storyBook.push(
                         {
                             t,
-                            createElement: () => props.element({
+                            color: props.element.color,
+                            createElement: () => props.element.create({
                                 direction: props.direction,
                                 pos,
                                 v: props.v
@@ -667,10 +669,10 @@ namespace StoryBook {
     let totalTicks: number
     function updateProgressBar(level: Level, ticks: number) {
         if (ticks == 1) {
-            spriteProgressBar.image.fill(11)
+            spriteProgressBar.image.fill(15)
             totalTicks = level.storyBook[level.storyBook.length - 1].t + 100 //wait 10s, as storyboard does
             level.storyBook.forEach((e) => {
-                spriteProgressBar.image.setPixel(e.t * 160 / totalTicks, 0, 1) //can't distinguish enemy/cloud here :(
+                spriteProgressBar.image.setPixel(e.t * 160 / totalTicks, 0, e.color) //can't distinguish enemy/cloud here :(
             })
         }
         spriteProgressBar.image.fillRect(0, 0, ticks * 160 / totalTicks, 1, 4)

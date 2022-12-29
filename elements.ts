@@ -89,26 +89,45 @@ function rotate45(img: Image, img45: Image, angleDegrees: number): Image {
 }
 
 class Elements {
-    public static cloud1 = (mov: Movement) => new Cloud(mov, 1);
-    public static cloud2 = (mov: Movement) => new Cloud(mov, 2);
+    public static cloud1 = {color:15, create:(mov: Movement) => new Cloud(mov, 1)};
+    public static cloud2 = {color:15, create:(mov: Movement) => new Cloud(mov, 2)};
 
-    public static island1 = (mov: Movement) => new Island(mov, 1);
-    public static island2 = (mov: Movement) => new Island(mov, 2);
-    public static island3 = (mov: Movement) => new Island(mov, 3);
-    public static island4 = (mov: Movement) => new Island(mov, 4);
+    public static island1 = {color:15, create:(mov: Movement) => new Island(mov, 1)};
+    public static island2 = {color:15, create:(mov: Movement) => new Island(mov, 2)};
+    public static island3 = {color:15, create:(mov: Movement) => new Island(mov, 3)};
+    public static island4 = {color:15, create:(mov: Movement) => new Island(mov, 4)};
 }
 
+img`
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+`
 class Enemies {
-    public static redPlane = (mov: Movement) => new RedPlane(mov);
-    public static greenPlane = (mov: Movement) => new GreenPlane(mov);
-    public static grayPlane = (mov: Movement) => new GrayPlane(mov);
-    public static bigPlane = (mov: Movement) => new BigPlane(mov);
-    public static bomberPlane = (mov: Movement) => new BomberPlane(mov);
-    public static combatHelicopter = (mov: Movement) => new CombatHelicopter(mov);
-    public static frigate = (mov: Movement) => new Frigate(mov);
-    public static battleShip = (mov: Movement) => new BattleShip(mov);
-    public static tank = (mov: Movement) => new Tank(mov);
-    public static antiAircraftTower = (mov: Movement) => new AntiAircraftTower(mov);
+    public static redPlane = {color:2, create:(mov: Movement) => new RedPlane(mov)};
+    public static greenPlane = {color:7, create:(mov: Movement) => new GreenPlane(mov)};
+    public static grayPlane = {color:11, create:(mov: Movement) => new GrayPlane(mov)};
+    public static bigPlane = {color:6, create:(mov: Movement) => new BigPlane(mov)};
+    public static bomberPlane = {color:13, create:(mov: Movement) => new BomberPlane(mov)};
+    public static combatHelicopter = {color:3, create:(mov: Movement) => new CombatHelicopter(mov)};
+    public static frigate = {color:10, create:(mov: Movement) => new Frigate(mov)};
+    public static battleShip = {color:4, create:(mov: Movement) => new BattleShip(mov)};
+    public static tank = {color:7, create:(mov: Movement) => new Tank(mov)};
+    public static antiAircraftTower = {color:12, create:(mov: Movement) => new AntiAircraftTower(mov)};
+    
     public static antiAircraftMissile = (x: number, y: number) => new AntiAircraftMissile(x, y);
 
     public static destroyAll(sprite: Sprite): void {
@@ -298,18 +317,18 @@ class Tank extends Vehicle implements Enemy {
         4 f 4
     `;
     private static readonly image: Image = img`
-          . . c 4 c 4 c . .
-          f f 6 6 6 6 6 f f
-          e e 6 b 7 b 6 e e
-          f f b 7 7 7 b f f
-          e e 7 7 c 7 7 e e
-          f f b 7 7 7 b f f
-          e e 6 b 7 b 6 e e
-          f f 6 6 7 6 6 f f
-          e e 6 6 7 6 6 e e
-          . . c 6 7 6 c . .
-          . . . . f . . . .
-      `;
+        . . c 4 c 4 c . .
+        f f 6 6 6 6 6 f f
+        e e 6 b 7 b 6 e e
+        f f b 7 7 7 b f f
+        e e 7 7 c 7 7 e e
+        f f b 7 7 7 b f f
+        e e 6 b 7 b 6 e e
+        f f 6 6 7 6 6 f f
+        e e 6 6 7 6 6 e e
+        . . c 6 7 6 c . .
+        . . . . f . . . .
+    `;
 
     constructor(mov: Movement) {
         super(Tank.image, mov);
@@ -445,29 +464,29 @@ class AntiAircraftTower extends Building implements Enemy {
 
 class CombatHelicopter extends Plane implements Enemy {
     private static readonly image: Image = img`
-        . . . . . . . . . . . . b . . . . . . . . . .
-        . . . . . . . . . . . 6 b . . . . . . . . . .
-        . . . . . . . . . . . 6 b . . . . . . . . . .
-        . . . . . . . . . . . 6 b . . . . . . . . . .
-        . . . . . . . . . . . 6 . . . . . . . . . . .
-        . . . . . . . . . . 6 6 6 . . . . . . . . . .
-        . . . . . . . . . b b d b b . . . . . . . . .
-        . . . . . . . b 1 d 6 b 6 d d b . . . . . . .
-        . . . . . . . d b 1 6 b 6 d b 1 . . . . . . .
-        . . . . . . b 1 d b 6 b 6 b 1 d b . . . . . .
-        . . . . . . b d 7 6 b b b 6 a d b . . . . . .
-        . . . . . . d b b b b f b b b b d . . . . . .
-        . . . . . . b d 7 6 b b b 6 a d b . . . . . .
-        . . . . . . b 1 7 b 6 b 6 b a d b . . . . . .
-        . . . . . . . d b 6 6 b 6 6 b 1 . . . . . . .
-        . . . . . . . b 1 d 8 b 8 d d b . . . . . . .
-        . . . . . . . . . b b d b b . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . .
+        ............b..........
+        ...........6b..........
+        ...........6b..........
+        ...........6b..........
+        ...........6...........
+        ..........666..........
+        .........bbdbb.........
+        .......b1d6b6ddb.......
+        .......db16b6db1.......
+        ......b1db6b6b1db......
+        ......bd76bbb6adb......
+        ......dbbbbfbbbbd......
+        ......bd76bbb6adb......
+        ......b17b6b6badb......
+        .......db66b66b1.......
+        .......b1d8b8ddb.......
+        .........bbdbb.........
+        .......................
+        .......................
+        .......................
+        .......................
+        .......................
+        .......................
     `;
     private static readonly image45: Image = img`
             . . . . . . . . . . . . . . . . . . . . . . .
@@ -688,36 +707,36 @@ class BomberPlane extends Plane implements Enemy {
         5 2 5
     `;
     private static readonly image: Image = img`
-        . . . . . . . . . . . . . . . . . . . . . . . 2 2 . . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . b b b d d c d d d d d d . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . b d d 4 d d c d d d 4 d d d . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . b d d d c d d d d d . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . d 6 d d . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . d 6 d d . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . d 6 d d . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . d 6 d d . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . d 6 d d . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . d 6 d d . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . d 6 d d . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . b d d d d 3 . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . b b b b d d d d d d 3 3 3 3 . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . b b b b b d d d d d d d d d d d d d d 3 3 3 3 3 . . . . . . . . . . . .
-        . . . . . . . b b b b b d d d d d d d d d d d d d d d d d d d d d d d d 3 3 3 3 3 . . . . . . .
-        . b b b b b b d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d d 3 3 3 3 3 3 .
-        b d d d d d d d 6 d d d d 6 d d d d d d d d d d d d d d d d d d d d 6 d d d d 6 d d d d d d d d
-        b d d d d 4 4 d d d 4 4 d d d 4 4 d d d d d d d d d d d d d d 4 4 d d d 4 4 d d d 4 4 d d d d d
-        b d d d d 4 4 d d d 4 4 d d d 4 4 d d d d d 8 d d 8 d d d d d 4 4 d d d 4 4 d d d 4 4 d d d d d
-        . b d d d d d d d d d d d d d d d d d d d d d 8 8 d d d d d d d d d d d d d d d d d d d d d d .
-        . . . . . . d d . . . . . . . d d . . . . . d d d d . . . . . d d . . . . . . . d d . . . . . .
-        . . . . . . d d . . . . . . . d d . . . . . d 8 8 d . . . . . d d . . . . . . . d d . . . . . .
-        . . . . b 6 6 6 6 c . . . b 6 6 6 6 c . . . d 8 8 d . . . b 6 6 6 6 c . . . b 6 6 6 6 c . . . .
-        . . . . . . . . . . . . . . . . . . . . . . d d d d . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . 6 2 2 6 . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . 2 d d 2 . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . d 2 2 d . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . 2 d d 2 . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . . 2 2 . . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+        .......................22.......................
+        ..................bbbddcdddddd..................
+        .................bdd4ddcddd4ddd.................
+        ...................bdddcddddd...................
+        ......................d6dd......................
+        ......................d6dd......................
+        ......................d6dd......................
+        ......................d6dd......................
+        ......................d6dd......................
+        ......................d6dd......................
+        ......................d6dd......................
+        .....................bdddd3.....................
+        .................bbbbdddddd3333.................
+        ............bbbbbdddddddddddddd33333............
+        .......bbbbbdddddddddddddddddddddddd33333.......
+        .bbbbbbdddddddddddddddddddddddddddddddddd333333.
+        bddddddd6dddd6dddddddddddddddddddd6dddd6dddddddd
+        bdddd44ddd44ddd44dddddddddddddd44ddd44ddd44ddddd
+        bdddd44ddd44ddd44ddddd8dd8ddddd44ddd44ddd44ddddd
+        .bddddddddddddddddddddd88dddddddddddddddddddddd.
+        ......dd.......dd.....dddd.....dd.......dd......
+        ......dd.......dd.....d88d.....dd.......dd......
+        ....b6666c...b6666c...d88d...b6666c...b6666c....
+        ......................dddd......................
+        ......................6226......................
+        ......................2dd2......................
+        ......................d22d......................
+        ......................2dd2......................
+        .......................22.......................
+        ................................................
     `;
 
     constructor(mov: Movement) {
