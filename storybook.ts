@@ -491,7 +491,8 @@ namespace StoryBook {
         playTitleScene()
         Players.create()
 
-        const levels = setup();
+        // const levels = setup();
+        const levels= randomLevels();
         let currentLevel = levels.shift();
         levelInfo(currentLevel);
         onLevelBegin()
@@ -526,6 +527,25 @@ namespace StoryBook {
                 }
             }
         })
+    }
+
+    function randomLevels(){
+        const elements=[]
+        for(let i=0;i<10;i++){
+        // { element: Enemies.bigPlane, after: 5, times: 2, v: 25, pos: 20, direction: Direction.LEFT, offset: 30 },
+            const elementGroup=Math.randomRange(0,1)
+            elements.push({ 
+                element: Math.pickRandom(elementTypes[elementGroup]), //Math.randomRange(0, 16) //Enemies.greenPlane,
+                after:Math.randomRange(30,50), 
+                times:elementGroup==1?1:Math.randomRange(1,4),
+                v: elementGroup == 1 ? 10 :Math.randomRange(20,50),
+                pos: Math.randomRange(10,100),
+                direction: elementGroup == 1 ? Direction.DOWN :Math.pickRandom([Direction.UP,Direction.LEFT,Direction.DOWN, Direction.RIGHT]),
+                offset: Math.randomRange(20,40)
+                }
+            )
+        }
+        return new GameBuilder().nextLevel("My Random Level").with(elements).build().levels
     }
 
     //aqee, add title scene

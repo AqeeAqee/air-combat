@@ -16,6 +16,7 @@ adds/changes:
 add title scene (handmade)
 add progress bar, diff colors for each kind of enemies
 change 2nd player plane to green
+co-pilot mode(removed player count choose), effect whenever 2nd player without input for 5s, press any btn exit.
 add player's spawn/ level begin/level complete behaviors with animations
 add new weapon, yellow icon, bullets concentrated
 add 5th weapon level, extra bullets shooting backward
@@ -26,6 +27,9 @@ change powerups droping from screen top
 pump away from enemy instead of random direction
 pump away occured only be hit but didn't dead
 commented hardcore mode
+
+experience features:
+random generated level.
 
 fix:
 bigplane missing when moving left/right: w/h should swap after transposed image

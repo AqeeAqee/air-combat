@@ -1078,3 +1078,23 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (projectile,
     }
 })
 
+let elementTypes = [ // :{ color: number, create: (mov: Movement) => void }[]
+    [
+    Enemies.redPlane,
+    Enemies.greenPlane,
+    Enemies.grayPlane,
+    Enemies.bigPlane,
+    Enemies.bomberPlane,
+    Enemies.combatHelicopter,
+    Enemies.frigate,
+    ],[
+    Elements.cloud1,
+    Elements.cloud2,
+    Enemies.tank,
+    Elements.island1,
+    Elements.island2,
+    Elements.island3,
+    Elements.island4,
+    Enemies.battleShip,
+    Enemies.antiAircraftTower,
+]]

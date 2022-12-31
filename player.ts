@@ -123,12 +123,14 @@ class Player extends SpriteWrapper.Support {
     private lastDirection: Direction = Direction.UP;
     private lastShot: number = 0;
 
-    private playerNo: number;
+    public playerNo: number;
     private controller: controller.Controller
+    private lastInputTime=0
+    public isAbsence = false
 
-    constructor(player: number = 1) {
-        super(sprites.create(Player.planeImages[player][1], SpriteKind.Player));
-        this.playerNo = player
+    constructor(playerNo: number = 1) {
+        super(sprites.create(Player.planeImages[playerNo][1], SpriteKind.Player));
+        this.playerNo = playerNo
 
         info.setLife(Player.MAX_LIFES);
         this.showLifeLights();
@@ -138,7 +140,7 @@ class Player extends SpriteWrapper.Support {
 
         this.sprite.setFlag(SpriteFlag.StayInScreen, true);
 
-        const bombPositions = player === 1 ? [5, 14, 23] : [scene.screenWidth() - 5, scene.screenWidth() - 14, scene.screenWidth() - 23]
+        const bombPositions = playerNo === 1 ? [5, 14, 23] : [scene.screenWidth() - 5, scene.screenWidth() - 14, scene.screenWidth() - 23]
         for (let pos of bombPositions) {
             const bomb = sprites.create(Player.bombImage, SpriteKind.BombPowerup);
             bomb.setFlag(SpriteFlag.RelativeToCamera, false);
@@ -152,43 +154,52 @@ class Player extends SpriteWrapper.Support {
 
         this.controller = this.playerNo === 2 ? controller.player2 : controller.player1;
         this.controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-            if (this.bombs > 0) {
-                this.bombs -= 1;
-                this.sprite.startEffect(effects.halo, 2000);
-                scene.cameraShake(10, 2000);
-                Enemies.destroyAll(bomb);
-                this.drawBombs();
-            }
+            this.lastInputTime = game.runtime()
+            this.dropBomb()
         });
 
         this.controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+            this.lastInputTime = game.runtime()
             this.shoot();
         });
 
+        this.lastInputTime=game.runtime()
         game.onUpdateInterval(250, function () {
             if (this.controller.B.isPressed()) {
                 this.shoot();
             }
 
             if (this.controller.left.isPressed() && this.lastDirection !== Direction.LEFT) {
+                this.lastInputTime = game.runtime()
                 if (this.lastDirection === Direction.RIGHT) {
-                    this.sprite.setImage(Player.planeImages[player][1]);
+                    this.sprite.setImage(Player.planeImages[playerNo][1]);
                     this.lastDirection = Direction.UP;
                 } else {
-                    this.sprite.setImage(Player.planeImages[player][0]);
+                    this.sprite.setImage(Player.planeImages[playerNo][0]);
                     this.lastDirection = Direction.LEFT;
                 }
             } else if (this.controller.right.isPressed() && this.lastDirection !== Direction.RIGHT) {
+                this.lastInputTime = game.runtime()
                 if (this.lastDirection === Direction.LEFT) {
-                    this.sprite.setImage(Player.planeImages[player][1]);
+                    this.sprite.setImage(Player.planeImages[playerNo][1]);
                     this.lastDirection = Direction.UP;
                 } else {
-                    this.sprite.setImage(Player.planeImages[player][2]);
+                    this.sprite.setImage(Player.planeImages[playerNo][2]);
                     this.lastDirection = Direction.RIGHT;
                 }
             } else if (!this.controller.left.isPressed() && !this.controller.right.isPressed()) {
-                this.sprite.setImage(Player.planeImages[player][1]);
+                this.sprite.setImage(Player.planeImages[playerNo][1]);
                 this.lastDirection = Direction.UP;
+            }
+
+            if(this.playerNo===2){
+                if (!this.isAbsence && (control.millis()-this.lastInputTime >5000)){
+                    this.isAbsence=true
+                    Players.onAbsence(this)
+                } else if (this.isAbsence && (control.millis() - this.lastInputTime < 5000)){
+                    this.isAbsence=false
+                    Players.onComeBack(this)
+                }
             }
         });
     }
@@ -245,7 +256,16 @@ class Player extends SpriteWrapper.Support {
         return this.sprite;
     }
 
-
+    public dropBomb(){
+        if (this.bombs > 0) {
+            this.bombs -= 1;
+            this.sprite.startEffect(effects.halo, 2000);
+            scene.cameraShake(10, 2000);
+            const bomb = this.bombSprites[0]
+            Enemies.destroyAll(bomb);
+            this.drawBombs();
+        }
+    }
     public shoot() {
         // Limit the shooting rate to not create too many sprites at once
         if (game.runtime() - this.lastShot < 250) {
@@ -298,6 +318,8 @@ class Player extends SpriteWrapper.Support {
     }
 
     public gotHit(otherSprite?: Sprite): boolean { //return whether bounce away
+        if(this.isAbsence) return false
+
         // Add some grace time when got hit
         if (game.runtime() > this.timeHitable) {
             this.timeHitable = game.runtime() + 500; //aqee, change lastHit to timeHitable, for add ghost time
@@ -383,7 +405,7 @@ namespace Players {
 
     export function create() {
         const MULTIPLAYER_ENABLED = control.ramSize() > 1024 * 400;
-        const twoPlayerMode: boolean = MULTIPLAYER_ENABLED && game.ask("Two player mode?");
+        const twoPlayerMode: boolean = true // MULTIPLAYER_ENABLED && game.ask("Two player mode?");
         addPlayerOne();
         if (twoPlayerMode) {
             addPlayerTwo();
@@ -401,6 +423,29 @@ namespace Players {
         players[1].dead()
         players[0].spawnX = scene.screenWidth() / 2 - 30
         players[1].spawnX = scene.screenWidth() / 2 + 30
+
+        controller.player1.B.onEvent(ControllerButtonEvent.Pressed, () => {
+            console.logValue("B", players.length > 1 && players[1].isAbsence)
+            if (players.length > 1 && players[1].isAbsence)
+                players[1].shoot()
+        })
+        controller.player1.A.onEvent(ControllerButtonEvent.Pressed, () => {
+            console.logValue("A", players.length > 1 && players[1].isAbsence)
+            if (players.length > 1 && players[1].isAbsence)
+                players[1].dropBomb()
+        })
+
+        controller.player1.B.onEvent(ControllerButtonEvent.Repeated, () => {
+            console.logValue("B", players.length > 1 && players[1].isAbsence)
+            if (players.length > 1 && players[1].isAbsence)
+                players[1].shoot()
+        })
+        controller.player1.A.onEvent(ControllerButtonEvent.Repeated, () => {
+            console.logValue("A", players.length > 1 && players[1].isAbsence)
+            if (players.length > 1 && players[1].isAbsence)
+                players[1].dropBomb()
+        })
+
     }
 
     export function randomPlayer() {
@@ -483,5 +528,19 @@ namespace Players {
 
     export function spawn() {
         players.forEach((p) => p.spawn())
+    }
+
+    export function onAbsence(player:Player){
+        if(player.playerNo==2){
+            if(players.length<2)
+                Players.addPlayerTwo()
+            players[1].sprite.follow(players[0].sprite, 80, 200)
+        }
+    }
+
+    export function onComeBack(player:Player){
+        if (player.playerNo == 2) {
+            players[1].sprite.follow(null)
+        }
     }
 }
