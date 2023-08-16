@@ -14,7 +14,8 @@
         "player.ts",
         "powerup.ts",
         "storybook.ts",
-        "elements.ts"
+        "elements.ts",
+        "summary.ts"
     ],
     "testFiles": [
         "test.ts"
