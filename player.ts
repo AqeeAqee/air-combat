@@ -1,9 +1,9 @@
 class Player extends SpriteWrapper.Support {
     private static readonly MAX_LIFES = 5;
     private hits = 0;
-    private bombs = 0;
+    private bombs = 3;
     private weaponLevel = 1;
-    private weaponKind = SpriteKind.Powerup;//aqee, for multi kind of weapons
+    private weaponKind = SpriteKind.WeaponPowerup;//aqee, for multi kind of weapons
     private timeHitable = 0;
     private readonly bombSprites: Sprite[] = [];
     private static readonly bombImage: Image = img`
@@ -71,52 +71,55 @@ class Player extends SpriteWrapper.Support {
     `;
     //aqee, change 2nd player to green color
     private static readonly plane2Left = img`
-        . . . . . 7 . . . . . . . . . .
-        . . 7 . . 7 . . e . . . . . . .
-        . 9 9 9 7 8 e 9 9 9 . . . . . .
-        . . 7 . 7 8 e . e . . . . . . .
-        7 7 7 7 7 7 7 7 7 e . . . . . .
-        e e e e e 7 b b b b e . . . . .
-        6 7 7 7 7 7 7 7 7 e 6 . . . . .
-        . . 7 e . . . 7 e . . . . . . .
-        . . 7 e . . . 7 e . . . . . . .
-        . . 7 e . . . 7 e . . . . . . .
-        . 7 7 7 . . . 7 e e . . . . . .
-        . 9 7 6 e e e 6 e 9 . . . . . .
-        7 7 7 7 7 7 7 7 7 e e . . . . .
-        . . 7 e . . . 7 e . . . . . . .
+        . . . . . . . . . . . . . . . . .
+        . . . . . . 7 . . . . . . . . . .
+        . . . 7 . . 7 . . e . . . . . . .
+        . . 9 9 9 7 8 e 9 9 9 . . . . . .
+        . . . 7 . 7 8 e . e . . . . . . .
+        . 7 7 7 7 7 7 7 7 7 e . . . . . .
+        . e e e e e 7 b b b b e . . . . .
+        . 6 7 7 7 7 7 7 7 7 e 6 . . . . .
+        . . . 7 e . . . 7 e . . . . . . .
+        . . . 7 e . . . 7 e . . . . . . .
+        . . . 7 e . . . 7 e . . . . . . .
+        . . 7 7 7 . . . 7 e e . . . . . .
+        . . 9 7 6 e e e 6 e 9 . . . . . .
+        . 7 7 7 7 7 7 7 7 7 e e . . . . .
+        . . . 7 e . . . 7 e . . . . . . .
     `;
     private static readonly plane2Straight = img`
-        . . . . . . . 7 7 . . . . . . .
-        . . . 7 . . . 7 7 . . . 7 . . .
-        . . 6 6 6 . 7 8 8 e . 6 6 6 . .
-        . . . 7 . . 7 8 8 e . . 7 . . .
-        . 7 7 7 7 7 7 7 7 7 7 7 7 7 7 .
-        7 7 e e e e e e b b b b b b 7 e
-        . 6 7 7 7 7 7 7 7 7 7 7 7 7 6 .
-        . . . 7 e . . . . . . 7 e . . .
-        . . . 7 e . . . . . . 7 e . . .
-        . . . 7 e . . . . . . 7 e . . .
-        . . 7 7 7 e . . . . 7 7 7 e . .
-        . . 9 7 6 9 e e e e 9 6 7 9 . .
-        d 7 7 7 7 7 7 7 7 7 7 7 7 7 7 e
-        . . . 7 e . . . . . . 7 e . . .
+        . . . . . . . . . . . . . . . . .
+        . . . . . . . . 7 7 . . . . . . .
+        . . . . 7 . . . 7 7 . . . 7 . . .
+        . . . 6 6 6 . 7 8 8 e . 6 6 6 . .
+        . . . . 7 . . 7 8 8 e . . 7 . . .
+        . . 7 7 7 7 7 7 7 7 7 7 7 7 7 7 .
+        . 7 7 e e e e e e b b b b b b 7 e
+        . . 6 7 7 7 7 7 7 7 7 7 7 7 7 6 .
+        . . . . 7 e . . . . . . 7 e . . .
+        . . . . 7 e . . . . . . 7 e . . .
+        . . . . 7 e . . . . . . 7 e . . .
+        . . . 7 7 7 e . . . . 7 7 7 e . .
+        . . . 9 7 6 9 e e e e 9 6 7 9 . .
+        . d 7 7 7 7 7 7 7 7 7 7 7 7 7 7 e
+        . . . . 7 e . . . . . . 7 e . . .
     `;
     private static readonly plane2Right = img`
-        . . . . . . . . . . 7 . . . . .
-        . . . . . . . 7 . . 7 . . 7 . .
-        . . . . . . 9 9 9 7 8 7 9 9 9 .
-        . . . . . . . 7 . 7 8 7 . 7 . .
-        . . . . . 9 7 7 7 7 7 7 7 7 7 7
-        . . . . . 9 e e e e 7 b b b b 7
-        . . . . . 6 7 7 7 7 7 7 7 7 7 6
-        . . . . . . . 7 7 . . . 7 7 . .
-        . . . . . . . 7 7 . . . 7 7 . .
-        . . . . . . . 7 7 . . . 7 7 . .
-        . . . . . . 7 7 7 . . . 7 7 7 .
-        . . . . . . 9 7 6 e e e 6 7 9 .
-        . . . . . 9 7 7 7 7 7 7 7 7 7 7
-        . . . . . . . 7 e . . . 7 e . .
+        . . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . 7 . . . . .
+        . . . . . . . . 7 . . 7 . . 7 . .
+        . . . . . . . 9 9 9 7 8 7 9 9 9 .
+        . . . . . . . . 7 . 7 8 7 . 7 . .
+        . . . . . . 9 7 7 7 7 7 7 7 7 7 7
+        . . . . . . 9 e e e e 7 b b b b 7
+        . . . . . . 6 7 7 7 7 7 7 7 7 7 6
+        . . . . . . . . 7 7 . . . 7 7 . .
+        . . . . . . . . 7 7 . . . 7 7 . .
+        . . . . . . . . 7 7 . . . 7 7 . .
+        . . . . . . . 7 7 7 . . . 7 7 7 .
+        . . . . . . . 9 7 6 e e e 6 7 9 .
+        . . . . . . 9 7 7 7 7 7 7 7 7 7 7
+        . . . . . . . . 7 e . . . 7 e . .
     `;
     private static readonly planeImages = [[], [Player.plane1Left, Player.plane1Straight, Player.plane1Right],
     [Player.plane2Left, Player.plane2Straight, Player.plane2Right]]
@@ -131,18 +134,20 @@ class Player extends SpriteWrapper.Support {
     constructor(playerNo: number = 1) {
         super(sprites.create(Player.planeImages[playerNo][1], SpriteKind.Player));
         this.playerNo = playerNo
+        this.sprite.data["player"] = playerNo
 
         info.setLife(Player.MAX_LIFES);
         this.showLifeLights();
 
         this.sprite.y = 110;
-        this.sprite.z = 100;
+        this.sprite.z = 100 - playerNo;
 
         this.sprite.setFlag(SpriteFlag.StayInScreen, true);
 
         const bombPositions = playerNo === 1 ? [5, 14, 23] : [scene.screenWidth() - 5, scene.screenWidth() - 14, scene.screenWidth() - 23]
         for (let pos of bombPositions) {
             const bomb = sprites.create(Player.bombImage, SpriteKind.BombPowerup);
+            bomb.data["player"]= playerNo
             bomb.setFlag(SpriteFlag.RelativeToCamera, false);
             bomb.setFlag(SpriteFlag.Ghost | SpriteFlag.Invisible, true);
             bomb.setPosition(pos, scene.screenHeight() - 5);
@@ -153,20 +158,46 @@ class Player extends SpriteWrapper.Support {
         const bomb = this.bombSprites[0];
 
         this.controller = this.playerNo === 2 ? controller.player2 : controller.player1;
-        this.controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-            this.lastInputTime = game.runtime()
-            this.dropBomb()
-        });
+        // this.controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+        //     this.lastInputTime = game.runtime()
+        //     this.dropBomb()
+        // });
 
-        this.controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-            this.lastInputTime = game.runtime()
-            this.shoot();
-        });
+        // this.controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+        //     this.lastInputTime = game.runtime()
+        //     this.shoot();
+        // });
+
+        if(this.playerNo==2){
+            controller.player1.B.onEvent(ControllerButtonEvent.Pressed, () => {
+                if (this.isAbsence)
+                    this.shoot()
+            })
+            controller.player1.A.onEvent(ControllerButtonEvent.Pressed, () => {
+                if (this.isAbsence)
+                    this.dropBomb()
+            })
+            controller.player1.B.onEvent(ControllerButtonEvent.Repeated, () => {
+                if (this.isAbsence)
+                    this.shoot()
+            })
+            controller.player1.A.onEvent(ControllerButtonEvent.Repeated, () => {
+                if (this.isAbsence)
+                    this.dropBomb()
+            })
+        }
+
+
 
         this.lastInputTime=game.runtime()
+        
         game.onUpdateInterval(250, function () {
             if (this.controller.B.isPressed()) {
                 this.shoot();
+            }
+
+            if (this.controller.A.isPressed()) {
+                this.dropBomb();
             }
 
             if (this.controller.left.isPressed() && this.lastDirection !== Direction.LEFT) {
@@ -193,12 +224,20 @@ class Player extends SpriteWrapper.Support {
             }
 
             if(this.playerNo===2){
-                if (!this.isAbsence && (control.millis()-this.lastInputTime >5000)){
+                if(controller.player2.buttons.find((b)=>b.isPressed()))
+                    this.lastInputTime=game.runtime()
+                // if (game.currentScene() && game.currentScene().followingSprites){
+                //     const followInfo = game.currentScene().followingSprites
+                //     console.log(["following count:", followInfo.length, ", noInputTime:", game.runtime() - this.lastInputTime, ", isAbsence:", this.isAbsence])
+                // }
+                if (!this.isAbsence && (game.runtime()-this.lastInputTime >10000)){
                     this.isAbsence=true
                     Players.onAbsence(this)
-                } else if (this.isAbsence && (control.millis() - this.lastInputTime < 5000)){
+                    // console.log("follow")
+                } else if (this.isAbsence && (game.runtime() - this.lastInputTime < 5000)){
                     this.isAbsence=false
                     Players.onComeBack(this)
+                    // console.log("unfollow")
                 }
             }
         });
@@ -231,7 +270,7 @@ class Player extends SpriteWrapper.Support {
     }
 
     public increaseBombs() {
-        this.bombs = Math.min(this.bombs + 1, 4);
+        this.bombs = Math.min(this.bombs + 1, 3);
         this.drawBombs()
     }
 
@@ -260,7 +299,7 @@ class Player extends SpriteWrapper.Support {
         if (this.bombs > 0) {
             this.bombs -= 1;
             this.sprite.startEffect(effects.halo, 2000);
-            scene.cameraShake(10, 2000);
+            scene.cameraShake(10, 500);
             const bomb = this.bombSprites[0]
             Enemies.destroyAll(bomb);
             this.drawBombs();
@@ -272,9 +311,10 @@ class Player extends SpriteWrapper.Support {
             return;
         }
 
-        if (this.weaponKind == SpriteKind.Powerup2) { //aqee, new weapon
+        if (this.weaponKind == SpriteKind.WeaponPowerup2) { //aqee, new weapon
             for (let i = -this.weaponLevel; i <= this.weaponLevel; i += 2) {
                 const p = sprites.createProjectileFromSprite(Player.projectile2Img, this.sprite, 0, -50);
+                p.data["player"]=this.playerNo
                 p.setScaleCore(1, this.weaponLevel)
                 p.x += i
                 p.y += Math.abs(i) - 12
@@ -283,35 +323,26 @@ class Player extends SpriteWrapper.Support {
             if (this.weaponLevel >= 5) {
                 for (let i = -1; i <= 1; i += 2) {
                     const p = sprites.createProjectileFromSprite(Player.projectile2Img, this.sprite, 0, 50);
+                    p.data["player"] = this.playerNo
                     p.setScaleCore(1, 3)
                     p.x += i
                     p.y += 12
                     p.ay = 500
                 }
             }
-        } else { //this.weaponKind == SpriteKind.Powerup
-            if (this.weaponLevel === 1) {
-                sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, 0, -100);
-            } else if (this.weaponLevel >= 2) {
-                const p1 = sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, 0, -100);
-                const p2 = sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, 0, -100);
-                p1.x -= 1
-                p2.x += 1
-            }
-
-            if (this.weaponLevel >= 3) {
-                sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, -50, -87);
-                sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, 50, -87)
-            }
-            if (this.weaponLevel >= 4) {
-                sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, -87, -50);
-                sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, 87, -50);
-            }
-            if (this.weaponLevel >= 5) {
-                const p1 = sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, 0, 100);
-                const p2 = sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, 0, 100);
-                p1.x -= 1
-                p2.x += 1
+        } else { //this.weaponKind == SpriteKind.WeaponPowerup
+            const vList = [[],[0, -100], [0, -100], [50, -87], [87, -50], [0, 100]]
+            for(let i=1;i<=this.weaponLevel;i++){
+                if((i==1) != (this.weaponLevel>1)){
+                    const p=sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, vList[i][0], vList[i][1]);
+                    p.data["player"] = this.playerNo
+                    if (i == 2 || i == 5) p.x+=1
+                }
+                if(i>1){
+                    const p2 = sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, -vList[i][0], vList[i][1]);
+                    p2.data["player"] = this.playerNo
+                    if(i==2||i==5) p2.x-=1
+                }
             }
         }
         this.lastShot = game.runtime();
@@ -404,8 +435,8 @@ namespace Players {
     const players: Player[] = [];
 
     export function create() {
-        const MULTIPLAYER_ENABLED = control.ramSize() > 1024 * 400;
-        const twoPlayerMode: boolean = true // MULTIPLAYER_ENABLED && game.ask("Two player mode?");
+        const MULTIPLAYER_ENABLED =  control.ramSize() > 1024 * 400;
+        const twoPlayerMode: boolean =  MULTIPLAYER_ENABLED// && game.ask("Two player mode?");
         addPlayerOne();
         if (twoPlayerMode) {
             addPlayerTwo();
@@ -464,19 +495,15 @@ namespace Players {
     }
 
     function init() {
-        sprites.onOverlap(SpriteKind.EnemyProjectile, SpriteKind.Player, function (enemyProjectile, playerSprite) {
-            fromSprite(playerSprite).gotHit(enemyProjectile);
-        });
-
-        sprites.onOverlap(SpriteKind.Powerup, SpriteKind.Player, function (powerUpSprite, playerSprite) {
+        sprites.onOverlap(SpriteKind.WeaponPowerup, SpriteKind.Player, function (powerUpSprite, playerSprite) {
             info.changeScoreBy(30);
-            fromSprite(playerSprite).increaseWeaponLevel(SpriteKind.Powerup);
+            fromSprite(playerSprite).increaseWeaponLevel(SpriteKind.WeaponPowerup);
             powerup.powerUp.caught();
         });
 
-        sprites.onOverlap(SpriteKind.Powerup2, SpriteKind.Player, function (powerUp2Sprite, playerSprite) {
+        sprites.onOverlap(SpriteKind.WeaponPowerup2, SpriteKind.Player, function (powerUp2Sprite, playerSprite) {
             info.changeScoreBy(30);
-            fromSprite(playerSprite).increaseWeaponLevel(SpriteKind.Powerup2);
+            fromSprite(playerSprite).increaseWeaponLevel(SpriteKind.WeaponPowerup2);
             powerup.powerUp2.caught();
         });
 
@@ -490,6 +517,10 @@ namespace Players {
             powerup.lifePowerUp.caught();
         });
 
+        sprites.onOverlap(SpriteKind.EnemyProjectile, SpriteKind.Player, function (enemyProjectile, playerSprite) {
+            fromSprite(playerSprite).gotHit(enemyProjectile);
+        });
+
         sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function (enemySprite, playerSprite) {
             const enemy: Enemy = SpriteWrapper.fromSprite(enemySprite) as Enemy;
             if (enemySprite.z < 10) {
@@ -497,28 +528,12 @@ namespace Players {
                 return;
             }
 
-            if (fromSprite(playerSprite).gotHit()) { //aqee, add isHitable() condition
-                //aqee, replace random bounce direction with far from enemy
+            if (fromSprite(playerSprite).gotHit()) {
+                //aqee, replace random bounce direction with bumped away from enemy
                 playerSprite.setPosition(2 * playerSprite.x - enemySprite.x, 2 * playerSprite.y - enemySprite.y)
-                // const pushedBy: number = 20;
-                // switch (randint(0, 3)) {
-                //     case 0:
-                //         playerSprite.x += pushedBy;
-                //         break;
-                //     case 1:
-                //         playerSprite.x -= pushedBy;
-                //         break;
-                //     case 2:
-                //         playerSprite.y += pushedBy;
-                //         break;
-                //     default:
-                //         playerSprite.y -= pushedBy;
-                //         break;
-                // }
-
                 scene.cameraShake(3, 700);
-                enemy.gotHitBy();
             }
+                enemy.gotHitBy(playerSprite);
         });
     }
 
@@ -534,8 +549,9 @@ namespace Players {
         if(player.playerNo==2){
             if(players.length<2)
                 Players.addPlayerTwo()
-            players[1].sprite.follow(players[0].sprite, 80, 200)
+            players[1].sprite.follow(players[0].sprite, 80, 300)
         }
+        
     }
 
     export function onComeBack(player:Player){

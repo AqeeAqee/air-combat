@@ -1,6 +1,6 @@
 namespace SpriteKind {
-    export const Powerup = SpriteKind.create()
-    export const Powerup2 = SpriteKind.create()
+    export const WeaponPowerup = SpriteKind.create()
+    export const WeaponPowerup2 = SpriteKind.create()
     export const BombPowerup = SpriteKind.create()
     export const LifePowerup = SpriteKind.create()
 }
@@ -48,7 +48,7 @@ namespace powerup {
     . 7 7 1 7 7 7 7
     . 7 7 1 7 7 7 7
     . . 7 7 7 7 7 .
-`, SpriteKind.Powerup, 8000, 50);
+`, SpriteKind.WeaponPowerup, 8000, 50);
     export const powerUp2 = new PowereUp(img`
     . . . . . . . .
     . . 5 5 5 5 5 .
@@ -58,7 +58,7 @@ namespace powerup {
     . 5 5 b 5 5 5 5
     . 5 5 b 5 5 5 5
     . . 5 5 5 5 5 .
-`, SpriteKind.Powerup2, 8500, 50);
+`, SpriteKind.WeaponPowerup2, 8500, 50);
     export const bombPowerUp = new PowereUp(img`
     . 6 6 6 6 . . c
     6 6 6 6 6 6 c .
