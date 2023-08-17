@@ -17,6 +17,7 @@ namespace summary {
         */
     
     let enemyKillList: number[][] = []  // [[subKind, score, countByPlayer1, countByPlayer2], ...]
+    let enemyIcons:Image[]=[]
     const imgStar= img`
         . . . . . . . . . . . . . . . .
         . . . . . . . . b . . . . . . .
@@ -35,6 +36,36 @@ namespace summary {
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
     `
+    export function destroiedEnemy(enemy: BaseEnemy, by: Sprite) {
+        let playerNo= by.data["player"]
+        if(!playerNo) return
+        let item = enemyKillList.find((v) => v[0] == enemy.subKind)
+        if(!item){
+            enemyKillList.push([enemy.subKind, enemy.getScore(), 0, 0])
+            item=enemyKillList[enemyKillList.length-1]
+
+            const icon= image.create(12,12)
+            // icon.fill(1)
+            enemyIcons.push(icon)
+            const img = enemy.sprite.image
+            if(img)
+                icon.blit(0, 0, 12, 12, img, 0,0,img.width, img.height, true, false)
+        }
+        item[(playerNo as number)+1] += 1
+    }
+
+    function lPadding(s:string, length:number):string{
+        while(s.length<length)
+            s=" "+s
+        return s
+    }
+
+    function rPadding(s:string, length:number):string{
+        while(s.length<length)
+            s+=" "
+        return s
+    }
+
     export function show() {
         controller._setUserEventsEnabled(false);
         game.pushScene();
@@ -42,9 +73,11 @@ namespace summary {
         scene.setBackgroundImage(null); // GC it
         let done = false
 
-        let maxScollY= 32+ enemyKillList.length*10 -120
+        let maxScollY= 32+ enemyKillList.length*13 -120
         let scrollY=0
 
+        const iCharsScore=6
+        const iCharCount=7
         //draw to screen, to save memory
         game.onShade(()=>{
             screen.fill(0)
@@ -59,29 +92,36 @@ namespace summary {
             let x=16, y=2 - scrollY
             y+=10
             y+=3
-            for(let item of enemyKillList){
-                screen.print((item[0]-1000)+ " "+ item[1] +" x "+ item[2]+"       "+item[3], x,y)
-                y+=10
-            }
+            //items
+            enemyKillList.forEach((item,i)=>{
+                screen.drawTransparentImage(enemyIcons[i], 12, y)
+                let s = lPadding(item[1].toString(), iCharsScore) + lPadding("x" + item[2], iCharCount) + lPadding("x" + item[3], iCharCount)
+                screen.print(s, x,y)
+                y+=13
+            })
             y+=2
             screen.drawLine(20, y, 140, y, 4)
             y+=4
+
+            //total
             let total= enemyKillList.reduce((p, c, i)=>{
                 console.log(p.join())
                 p[0]+=c[1]*c[2]
                 p[1]+=c[1]*c[3]
                 return p
             }, [0,0])
-            screen.print("          ".substr(0, 11 - total[0].toString().length) + total[0] + "        ".substr(0, 9 - total[1].toString().length) + total[1], x, y)
-
+            screen.print(lPadding(total[0] + "", iCharsScore+iCharCount) + lPadding(total[1] + "", iCharCount), x, y)
             
+            //title
             screen.fillRect(0,0,160,18,0)
-            screen.printCenter("Scores    P1      P2", 6, 4)
+            screen.print(rPadding("Scores",iCharsScore)+lPadding("P1",iCharCount)+lPadding("P2",iCharCount), x, 6, 4)
             screen.drawLine(20, 16, 140, 16, 4)
+
+            //star
             if (scrollY == maxScollY - 1 && total[0] != total[1])  //once
                 music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.InBackground)
             if (scrollY == maxScollY && total[0] != total[1]){ //always
-                screen.drawTransparentImage(imgStar, (total[0] > total[1]) ? 89 : 112, 3)
+                screen.drawTransparentImage(imgStar, x+(iCharsScore+iCharCount+ (total[0] > total[1] ? 0 : iCharCount))*6-28, 4)
             }
 
 
@@ -97,35 +137,31 @@ namespace summary {
 
     }
 
-    export function destroiedEnemy(enemy: BaseEnemy, by: Sprite) {
-        console.log(typeof (enemy))
-        console.log(typeof (enemy).getScore())
-        let playerNo= by.data["player"]
-        if(!playerNo) return
-        let item = enemyKillList.find((v) => v[0] == enemy.subKind)
-        if(!item){
-            enemyKillList.push([enemy.subKind, enemy.getScore(), 0, 0])
-            item=enemyKillList[enemyKillList.length-1]
-        }
-        item[(playerNo as number)+1] += 1
-    }
-
     export function clear() {
         enemyKillList=[]
+        enemyIcons=[]
     }
 
     //for test
-    enemyKillList.push([EnemySubKind.RedPlane, 150, 111, 12])
+    /*
+    enemyKillList.push([EnemySubKind.RedPlane, 150, 1, 12])
     enemyKillList.push([EnemySubKind.GreenPlane, 150, 11, 12])
     enemyKillList.push([EnemySubKind.GrayPlane, 150, 11, 12])
     enemyKillList.push([EnemySubKind.BigPlane, 150, 11, 12])
     enemyKillList.push([EnemySubKind.BomberPlane, 150, 11, 12])
     enemyKillList.push([EnemySubKind.CombatHelicopter, 150, 11, 12])
     enemyKillList.push([EnemySubKind.Frigate, 150, 11, 12])
-    enemyKillList.push([EnemySubKind.BattleShip, 150, 11, 12])
-    enemyKillList.push([EnemySubKind.Tank, 150, 11, 12])
-    enemyKillList.push([EnemySubKind.AntiAircraftTower, 150, 11, 12])
-    enemyKillList.push([EnemySubKind.AntiAircraftMissile, 150, 11, 12])
+    enemyKillList.push([EnemySubKind.BattleShip, 150, 11, 1])
+    enemyKillList.push([EnemySubKind.Tank, 150, 1, 12])
+    enemyKillList.push([EnemySubKind.AntiAircraftTower, 150, 11, 123])
+    enemyKillList.push([EnemySubKind.AntiAircraftMissile, 150, 111, 1234])
+    for(let i=0;i<11;i++){
+        const icon = image.create(12, 12)
+        enemyIcons.push(icon)
+        icon.fill(1)
+        icon.print(i.toString(),0,0,2)
+    }
     show()
     clear()
+    */
 }
