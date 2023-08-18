@@ -1,11 +1,6 @@
 
 //ref pxt_modules\game\textDialogs.ts
 namespace game {
-    scene.setBackgroundImage(sprites.background.desert)
-    // game.showLongText("test", DialogLayout.Full)
-    // game.showImageDialog(sprites.background.autumn, DialogLayout.Full)
-    scene.backgroundImage().fill(0)
-
     const MAX_FRAME_UNIT = 12;
 
     //show Image with scrolling

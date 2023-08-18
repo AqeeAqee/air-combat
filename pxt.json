@@ -15,8 +15,8 @@
         "powerup.ts",
         "storybook.ts",
         "elements.ts",
-        "summary.ts",
-        "dialog.ts"
+        "dialog.ts",
+        "summary.ts"
     ],
     "testFiles": [],
     "targetVersions": {
