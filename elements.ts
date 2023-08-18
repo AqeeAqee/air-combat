@@ -2,6 +2,20 @@ namespace SpriteKind {
     export const EnemyProjectile = SpriteKind.create()
 }
 
+namespace EnemySubKind {
+    export const RedPlane = SpriteKind.create()
+    export const GreenPlane = SpriteKind.create()
+    export const GrayPlane = SpriteKind.create()
+    export const BigPlane = SpriteKind.create()
+    export const BomberPlane = SpriteKind.create()
+    export const CombatHelicopter = SpriteKind.create()
+    export const Frigate = SpriteKind.create()
+    export const BattleShip = SpriteKind.create()
+    export const Tank = SpriteKind.create()
+    export const AntiAircraftTower = SpriteKind.create()
+    export const AntiAircraftMissile = SpriteKind.create()
+}
+
 function angleBetween(sprite1: Sprite, sprite2: Sprite): number {
     const dx: number = sprite2.x - sprite1.x;
     const dy: number = sprite2.y - sprite1.y;
@@ -89,13 +103,13 @@ function rotate45(img: Image, img45: Image, angleDegrees: number): Image {
 }
 
 class Elements {
-    public static cloud1 = {color:15, create:(mov: Movement) => new Cloud(mov, 1)};
-    public static cloud2 = {color:15, create:(mov: Movement) => new Cloud(mov, 2)};
+    public static cloud1 = { color: 15, create: (mov: Movement) => new Cloud(mov, 1) };
+    public static cloud2 = { color: 15, create: (mov: Movement) => new Cloud(mov, 2) };
 
-    public static island1 = {color:15, create:(mov: Movement) => new Island(mov, 1)};
-    public static island2 = {color:15, create:(mov: Movement) => new Island(mov, 2)};
-    public static island3 = {color:15, create:(mov: Movement) => new Island(mov, 3)};
-    public static island4 = {color:15, create:(mov: Movement) => new Island(mov, 4)};
+    public static island1 = { color: 15, create: (mov: Movement) => new Island(mov, 1) };
+    public static island2 = { color: 15, create: (mov: Movement) => new Island(mov, 2) };
+    public static island3 = { color: 15, create: (mov: Movement) => new Island(mov, 3) };
+    public static island4 = { color: 15, create: (mov: Movement) => new Island(mov, 4) };
 }
 
 img`
@@ -117,17 +131,17 @@ img`
     . . . . . . . . . . . . . . . .
 `
 class Enemies {
-    public static redPlane = {color:2, create:(mov: Movement) => new RedPlane(mov)};
-    public static greenPlane = {color:7, create:(mov: Movement) => new GreenPlane(mov)};
-    public static grayPlane = {color:11, create:(mov: Movement) => new GrayPlane(mov)};
-    public static bigPlane = {color:6, create:(mov: Movement) => new BigPlane(mov)};
-    public static bomberPlane = {color:13, create:(mov: Movement) => new BomberPlane(mov)};
-    public static combatHelicopter = {color:3, create:(mov: Movement) => new CombatHelicopter(mov)};
-    public static frigate = {color:10, create:(mov: Movement) => new Frigate(mov)};
-    public static battleShip = {color:4, create:(mov: Movement) => new BattleShip(mov)};
-    public static tank = {color:7, create:(mov: Movement) => new Tank(mov)};
-    public static antiAircraftTower = {color:12, create:(mov: Movement) => new AntiAircraftTower(mov)};
-    
+    public static redPlane = { color: 2, create: (mov: Movement) => new RedPlane(mov) };
+    public static greenPlane = { color: 7, create: (mov: Movement) => new GreenPlane(mov) };
+    public static grayPlane = { color: 11, create: (mov: Movement) => new GrayPlane(mov) };
+    public static bigPlane = { color: 6, create: (mov: Movement) => new BigPlane(mov) };
+    public static bomberPlane = { color: 13, create: (mov: Movement) => new BomberPlane(mov) };
+    public static combatHelicopter = { color: 3, create: (mov: Movement) => new CombatHelicopter(mov) };
+    public static frigate = { color: 10, create: (mov: Movement) => new Frigate(mov) };
+    public static battleShip = { color: 4, create: (mov: Movement) => new BattleShip(mov) };
+    public static tank = { color: 7, create: (mov: Movement) => new Tank(mov) };
+    public static antiAircraftTower = { color: 12, create: (mov: Movement) => new AntiAircraftTower(mov) };
+
     public static antiAircraftMissile = (x: number, y: number) => new AntiAircraftMissile(x, y);
 
     public static destroyAll(sprite: Sprite): void {
@@ -241,12 +255,14 @@ abstract class BaseObject extends SpriteWrapper.Support {
 }
 
 abstract class BaseEnemy extends BaseObject {
+    public subKind: number
     protected remainingHits: number = hardcore ? 1 : 2;
     protected hits: number = hardcore ? 1 : 2;
     protected effectStarted = false
 
     constructor(image: Image, mov: Movement, hits: number = 1) {
         super(image, mov);
+        this.subKind = this.sprite.kind()
 
         this.hits = hardcore ? hits * 2 : hits;
         this.remainingHits = this.hits;
@@ -267,6 +283,8 @@ abstract class BaseEnemy extends BaseObject {
             this.sprite.destroy(effects.fire, 100);
             info.changeScoreBy(this.getScore())
             music.playSound("C4:1");
+
+            summary.destroiedEnemy(this, projectile)
         } else {
             //aqee, add hit sound
             music.playTone(Note.C - 4 * this.remainingHits, BeatFraction.Double)
@@ -332,6 +350,7 @@ class Tank extends Vehicle implements Enemy {
 
     constructor(mov: Movement) {
         super(Tank.image, mov);
+        this.subKind = EnemySubKind.Tank
         this.onUpdateInterval(4000, () => {
             this.shoot();
         });
@@ -379,6 +398,7 @@ class AntiAircraftMissile extends Plane implements Enemy {
 
     constructor(x: number, y: number) {
         super(AntiAircraftMissile.image, { startX: x, startY: y, vx: 0, vy: 0 });
+        this.subKind = EnemySubKind.AntiAircraftMissile
 
         this.recalc(20);
 
@@ -438,6 +458,7 @@ class AntiAircraftTower extends Building implements Enemy {
 
     constructor(mov: Movement) {
         super(AntiAircraftTower.image, mov);
+        this.subKind = EnemySubKind.AntiAircraftTower
         const i = AntiAircraftTower.image.clone();
         i.drawTransparentImage(AntiAircraftMissile.image, 5, 5);
         this.sprite.setImage(i);
@@ -521,6 +542,7 @@ class CombatHelicopter extends Plane implements Enemy {
 
     constructor(mov: Movement) {
         super(CombatHelicopter.image, mov, 5);
+        this.subKind = EnemySubKind.CombatHelicopter
         this.sprite.z = cloudZ - 10; // below the clouds
 
         this.onUpdateInterval(400, () => {
@@ -556,6 +578,7 @@ class GreenPlane extends Plane implements Enemy {
 
     constructor(mov: Movement) {
         super(GreenPlane.image, mov);
+        this.subKind = EnemySubKind.GreenPlane
         this.sprite.z = cloudZ - 10; // below the clouds
     }
 }
@@ -580,6 +603,7 @@ class RedPlane extends Plane implements Enemy {
 
     constructor(mov: Movement) {
         super(RedPlane.image, mov);
+        this.subKind = EnemySubKind.RedPlane
     }
 }
 
@@ -614,6 +638,7 @@ class GrayPlane extends Plane implements Enemy {
 
     constructor(mov: Movement) {
         super(GrayPlane.image, mov, 2);
+        this.subKind = EnemySubKind.GrayPlane
         this.shoot();
     }
 
@@ -681,6 +706,7 @@ class BigPlane extends Plane implements Enemy {
 
     constructor(mov: Movement) {
         super(BigPlane.image, mov, 3);
+        this.subKind = EnemySubKind.BigPlane
         this.sprite.z = cloudZ //- 15; // below the clouds
         this.shoot();
         this.onUpdateInterval(1500, () => {
@@ -741,6 +767,7 @@ class BomberPlane extends Plane implements Enemy {
 
     constructor(mov: Movement) {
         super(BomberPlane.image, mov, 20);
+        this.subKind = EnemySubKind.BomberPlane
         this.sprite.z = cloudZ - 20; // below the clouds
         this.shoot();
         this.onUpdateInterval(800, () => {
@@ -786,6 +813,7 @@ class Frigate extends Ship implements Enemy {
 
     constructor(mov: Movement) {
         super(Frigate.image, mov);
+        this.subKind = EnemySubKind.Frigate
         this.onUpdateInterval(3000, () => {
             this.shoot();
         });
@@ -913,6 +941,7 @@ class BattleShip extends Ship implements Enemy {
 
     constructor(mov: Movement) {
         super(BattleShip.image, mov, 40);
+        this.subKind = EnemySubKind.BattleShip
         this.onUpdateInterval(2000, () => {
             this.shoot();
         });
@@ -1080,21 +1109,21 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (projectile,
 
 let elementTypes = [ // :{ color: number, create: (mov: Movement) => void }[]
     [
-    Enemies.redPlane,
-    Enemies.greenPlane,
-    Enemies.grayPlane,
-    Enemies.bigPlane,
-    Enemies.bomberPlane,
-    Enemies.combatHelicopter,
-    Enemies.frigate,
-    ],[
-    Elements.cloud1,
-    Elements.cloud2,
-    Enemies.tank,
-    Elements.island1,
-    Elements.island2,
-    Elements.island3,
-    Elements.island4,
-    Enemies.battleShip,
-    Enemies.antiAircraftTower,
-]]
+        Enemies.redPlane,
+        Enemies.greenPlane,
+        Enemies.grayPlane,
+        Enemies.bigPlane,
+        Enemies.bomberPlane,
+        Enemies.combatHelicopter,
+        Enemies.frigate,
+    ], [
+        Elements.cloud1,
+        Elements.cloud2,
+        Enemies.tank,
+        Elements.island1,
+        Elements.island2,
+        Elements.island3,
+        Elements.island4,
+        Enemies.battleShip,
+        Enemies.antiAircraftTower,
+    ]]

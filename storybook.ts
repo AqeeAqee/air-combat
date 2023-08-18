@@ -6,7 +6,7 @@ namespace StoryBook {
 
     interface Event {
         t: number;
-        color:number;
+        color: number;
         createElement(): void;
     }
 
@@ -18,7 +18,7 @@ namespace StoryBook {
         offset?: number;
         direction?: Direction;
         times?: number;
-        element: { color:number, create:(mov: Movement) => void};
+        element: { color: number, create: (mov: Movement) => void };
     }
 
     interface Level {
@@ -107,11 +107,13 @@ namespace StoryBook {
 
     class GameBuilder {
         levels: Level[] = [];
+        levelCounter = 0
 
         constructor() { }
 
         public nextLevel(description: string): LevelBuilder {
-            return LevelBuilder.level(this.levels.length + 1, description, this);
+            this.levelCounter += 1
+            return LevelBuilder.level(this.levelCounter, description, this);
         }
 
         public addLevel(level: Level) {
@@ -120,13 +122,21 @@ namespace StoryBook {
     }
 
 
-
+    const gameBuilder = new GameBuilder()
     function setup(): Level[] {
 
         const halfWidth: number = scene.screenWidth() / 2;
         const halfHeight: number = scene.screenHeight() / 2;
 
-        return new GameBuilder()
+        return gameBuilder
+            /*
+                .nextLevel("test level").with([
+                    { element: Elements.cloud1, after: 1, v: 2, pos: 120 },
+                    { element: Elements.cloud1, after: 10, v: 35, pos: 60 },
+                    { element: Enemies.greenPlane, v: 3, pos: 10, direction: Direction.LEFT },
+                    { element: Enemies.greenPlane, after: 10, v: 3, pos: 30, direction: Direction.RIGHT },
+                ]).build()
+                */
             .nextLevel("Air attack").with([
                 { element: Elements.cloud1, after: 10, v: 30, pos: 120 },
                 { element: Elements.cloud1, after: 10, v: 35, pos: 60 },
@@ -172,7 +182,6 @@ namespace StoryBook {
 
             ])
             .build()
-
             .nextLevel("Naval battle").with([
                 { element: Elements.cloud1, after: 20, times: 2, v: 30, pos: 130, offset: -60, delay: 10 },
                 { element: Enemies.greenPlane, after: 10, times: 3, v: 50, pos: 50, direction: Direction.LEFT },
@@ -491,14 +500,16 @@ namespace StoryBook {
         playTitleScene()
         Players.create()
 
-        // const levels = setup();
-        const levels= randomLevels();
-        let currentLevel = levels.shift();
+        const designedLevels = setup();
+        let currentLevel = designedLevels.shift();
+        // for testing 
+        // while(designedLevels.length>0)
+        //     designedLevels.shift()
         levelInfo(currentLevel);
         onLevelBegin()
         let lastElementAtTick = 0;
         let ticks = 0;
-        game.onUpdateInterval(100, () => {
+        game.onUpdateInterval(hardcore ? 60 : 100, () => {
             ticks++;
 
             updateProgressBar(currentLevel, ticks)
@@ -513,39 +524,46 @@ namespace StoryBook {
                 // End of level
                 if (ticks > lastElementAtTick + 100) {
                     // 10s after the last element has been created
-                    currentLevel = levels.shift();
-                    if (currentLevel) {
-                        // next level
-                        ticks = 0;
-                        lastElementAtTick = 0
-                        levelInfo(currentLevel);
-                        onLevelBegin()
-                    } else {
-                        // light.showAnimation(light.runningLightsAnimation, 3000);
-                        game.over(true);
-                    }
+
+                    summary.show()
+                    summary.clear()
+
+                    //temp, forever random levels
+                    currentLevel = designedLevels.shift();
+                    if (!currentLevel)
+                        currentLevel = randomLevels().shift()
+                    // if (currentLevel) {//with forever generated levels not required anymore
+                    // next level
+                    ticks = 0;
+                    lastElementAtTick = 0
+                    levelInfo(currentLevel);
+                    onLevelBegin()
+                    // } else {
+                    //     // light.showAnimation(light.runningLightsAnimation, 3000);
+                    //     game.over(true);
+                    // }
                 }
             }
         })
     }
 
-    function randomLevels(){
-        const elements=[]
-        for(let i=0;i<10;i++){
-        // { element: Enemies.bigPlane, after: 5, times: 2, v: 25, pos: 20, direction: Direction.LEFT, offset: 30 },
-            const elementGroup=Math.randomRange(0,1)
-            elements.push({ 
+    function randomLevels() {
+        const elements = []
+        for (let i = 0; i < 20; i++) {
+            // { element: Enemies.bigPlane, after: 5, times: 2, v: 25, pos: 20, direction: Direction.LEFT, offset: 30 },
+            const elementGroup = Math.randomRange(0, 1)
+            elements.push({
                 element: Math.pickRandom(elementTypes[elementGroup]), //Math.randomRange(0, 16) //Enemies.greenPlane,
-                after:Math.randomRange(30,50), 
-                times:elementGroup==1?1:Math.randomRange(1,4),
-                v: elementGroup == 1 ? 10 :Math.randomRange(20,50),
-                pos: Math.randomRange(10,100),
-                direction: elementGroup == 1 ? Direction.DOWN :Math.pickRandom([Direction.UP,Direction.LEFT,Direction.DOWN, Direction.RIGHT]),
-                offset: Math.randomRange(20,40)
-                }
+                after: Math.randomRange(40, 60),
+                times: elementGroup == 1 ? 1 : Math.randomRange(1, 4),
+                v: elementGroup == 1 ? 10 : Math.randomRange(20, 50),
+                pos: Math.randomRange(10, 100),
+                direction: elementGroup == 1 ? Direction.DOWN : Math.pickRandom([Direction.UP, Direction.LEFT, Direction.DOWN, Direction.RIGHT]),
+                offset: Math.randomRange(20, 40)
+            }
             )
         }
-        return new GameBuilder().nextLevel("My Random Level").with(elements).build().levels
+        return gameBuilder.nextLevel("Random Generated Level").with(elements).build().levels
     }
 
     //aqee, add title scene
