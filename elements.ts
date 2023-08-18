@@ -256,6 +256,7 @@ abstract class BaseObject extends SpriteWrapper.Support {
 
 abstract class BaseEnemy extends BaseObject {
     public subKind: number
+
     protected remainingHits: number = hardcore ? 1 : 2;
     protected hits: number = hardcore ? 1 : 2;
     protected effectStarted = false
@@ -263,6 +264,7 @@ abstract class BaseEnemy extends BaseObject {
     constructor(image: Image, mov: Movement, hits: number = 1) {
         super(image, mov);
         this.subKind = this.sprite.kind()
+
 
         this.hits = hardcore ? hits * 2 : hits;
         this.remainingHits = this.hits;
@@ -604,6 +606,7 @@ class RedPlane extends Plane implements Enemy {
     constructor(mov: Movement) {
         super(RedPlane.image, mov);
         this.subKind = EnemySubKind.RedPlane
+
     }
 }
 

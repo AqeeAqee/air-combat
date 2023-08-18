@@ -20,6 +20,7 @@ add summary
 fix max 4 bomb to 3
 2022-1
 fix copilot z-index over pilot when following
+
 2022-12, Aqee Li
 adds/changes:
 always 2 plyers
@@ -53,6 +54,7 @@ TODO:
 level summary, for both players
     scoll with arrow keys
     custom grid dialog
+
 
 add island for ground-enemies, in randomLevels
 load only one level a time, for save memory of device

@@ -560,8 +560,7 @@ namespace StoryBook {
                 pos: Math.randomRange(10, 100),
                 direction: elementGroup == 1 ? Direction.DOWN : Math.pickRandom([Direction.UP, Direction.LEFT, Direction.DOWN, Direction.RIGHT]),
                 offset: Math.randomRange(20, 40)
-            }
-            )
+            })
         }
         return gameBuilder.nextLevel("Random Generated Level").with(elements).build().levels
     }
