@@ -502,9 +502,12 @@ namespace StoryBook {
 
         const designedLevels = setup();
         let currentLevel = designedLevels.shift();
+
         // for testing 
         // while(designedLevels.length>0)
         //     designedLevels.shift()
+        // currentLevel=randomLevels().shift()
+
         levelInfo(currentLevel);
         onLevelBegin()
         let lastElementAtTick = 0;
@@ -553,7 +556,7 @@ namespace StoryBook {
             // { element: Enemies.bigPlane, after: 5, times: 2, v: 25, pos: 20, direction: Direction.LEFT, offset: 30 },
             const elementGroup = Math.randomRange(0, 1)
             elements.push({
-                element: Math.pickRandom(elementTypes[elementGroup]), //Math.randomRange(0, 16) //Enemies.greenPlane,
+                element: Math.pickRandom(elementTypes[elementGroup]), //elementTypes[elementGroup][Math.randomRange(2,2)],// 
                 after: Math.randomRange(40, 60),
                 times: elementGroup == 1 ? 1 : Math.randomRange(1, 4),
                 v: elementGroup == 1 ? 10 : Math.randomRange(20, 50),
@@ -561,6 +564,18 @@ namespace StoryBook {
                 direction: elementGroup == 1 ? Direction.DOWN : Math.pickRandom([Direction.UP, Direction.LEFT, Direction.DOWN, Direction.RIGHT]),
                 offset: Math.randomRange(20, 40)
             })
+            if (elements[elements.length - 1].element.color == 7){//tank, add island
+                elements.insertAt(elements.length - 1,{
+                    element: elementTypes[1][Math.randomRange(3, 6)], //Math.randomRange(0, 16) //Enemies.greenPlane,
+                    after: elements[elements.length - 1].after,
+                    times: 1,
+                    v: 10,
+                    pos: elements[elements.length - 1].pos,
+                    direction: Direction.DOWN,
+                    offset: elements[elements.length - 1].offset
+                })
+                elements[elements.length - 1].after=20
+            }
         }
         return gameBuilder.nextLevel("Random Generated Level").with(elements).build().levels
     }
