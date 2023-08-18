@@ -16,11 +16,11 @@ StoryBook.play();
 /** Change Log
  *
 2023-8
-add summary
+add level summary, for both players, scoll with arrow keys
+custom image dialog, with scolling
 fix max 4 bomb to 3
 2022-1
 fix copilot z-index over pilot when following
-
 2022-12, Aqee Li
 adds/changes:
 always 2 plyers
@@ -48,18 +48,10 @@ bigplane missing when moving left/right: w/h should swap after transposed image
 perf tune, avoid set fire effect of enemy repeatly
 
 TODO:
--shorten bomb shake duration
--co-pilot covered pilot, in following mode
 [bug] bombed when start first level
-level summary, for both players
-    scoll with arrow keys
-    custom grid dialog
-
-
 add island for ground-enemies, in randomLevels
 load only one level a time, for save memory of device
 pause feature
 tune FPS.
-
 
  */

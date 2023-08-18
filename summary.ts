@@ -124,7 +124,7 @@ namespace summary {
         enemyIcons.push(iconPlane.clone())
         enemyIcons[i].replace(2, Math.randomRange(3, 15))
     }
-    scene.setBackgroundImage(sprites.background.cityscape)
+    // scene.setBackgroundImage(sprites.background.cityscape)
     // show()
     clear()
     /*
