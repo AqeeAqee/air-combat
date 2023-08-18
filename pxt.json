@@ -9,12 +9,15 @@
         "pxt-spritewrapper": "github:ractive/pxt-spritewrapper#v0.0.4"
     },
     "files": [
+        "images.g.jres",
+        "images.g.ts",
         "main.ts",
         "README.md",
         "player.ts",
         "powerup.ts",
         "storybook.ts",
         "elements.ts",
+        "dialog.ts",
         "summary.ts"
     ],
     "testFiles": [

@@ -128,7 +128,7 @@ class Player extends SpriteWrapper.Support {
 
     public playerNo: number;
     private controller: controller.Controller
-    private lastInputTime=0
+    private lastInputTime = 0
     public isAbsence = false
 
     constructor(playerNo: number = 1) {
@@ -147,7 +147,8 @@ class Player extends SpriteWrapper.Support {
         const bombPositions = playerNo === 1 ? [5, 14, 23] : [scene.screenWidth() - 5, scene.screenWidth() - 14, scene.screenWidth() - 23]
         for (let pos of bombPositions) {
             const bomb = sprites.create(Player.bombImage, SpriteKind.BombPowerup);
-            bomb.data["player"]= playerNo
+            bomb.data["player"] = playerNo
+
             bomb.setFlag(SpriteFlag.RelativeToCamera, false);
             bomb.setFlag(SpriteFlag.Ghost | SpriteFlag.Invisible, true);
             bomb.setPosition(pos, scene.screenHeight() - 5);
@@ -168,7 +169,7 @@ class Player extends SpriteWrapper.Support {
         //     this.shoot();
         // });
 
-        if(this.playerNo==2){
+        if (this.playerNo == 2) {
             controller.player1.B.onEvent(ControllerButtonEvent.Pressed, () => {
                 if (this.isAbsence)
                     this.shoot()
@@ -189,8 +190,8 @@ class Player extends SpriteWrapper.Support {
 
 
 
-        this.lastInputTime=game.runtime()
-        
+        this.lastInputTime = game.runtime()
+
         game.onUpdateInterval(250, function () {
             if (this.controller.B.isPressed()) {
                 this.shoot();
@@ -223,19 +224,19 @@ class Player extends SpriteWrapper.Support {
                 this.lastDirection = Direction.UP;
             }
 
-            if(this.playerNo===2){
-                if(controller.player2.buttons.find((b)=>b.isPressed()))
-                    this.lastInputTime=game.runtime()
+            if (this.playerNo === 2) {
+                if (controller.player2.buttons.find((b) => b.isPressed()))
+                    this.lastInputTime = game.runtime()
                 // if (game.currentScene() && game.currentScene().followingSprites){
                 //     const followInfo = game.currentScene().followingSprites
                 //     console.log(["following count:", followInfo.length, ", noInputTime:", game.runtime() - this.lastInputTime, ", isAbsence:", this.isAbsence])
                 // }
-                if (!this.isAbsence && (game.runtime()-this.lastInputTime >10000)){
-                    this.isAbsence=true
+                if (!this.isAbsence && (game.runtime() - this.lastInputTime > 10000)) {
+                    this.isAbsence = true
                     Players.onAbsence(this)
                     // console.log("follow")
-                } else if (this.isAbsence && (game.runtime() - this.lastInputTime < 5000)){
-                    this.isAbsence=false
+                } else if (this.isAbsence && (game.runtime() - this.lastInputTime < 5000)) {
+                    this.isAbsence = false
                     Players.onComeBack(this)
                     // console.log("unfollow")
                 }
@@ -295,7 +296,7 @@ class Player extends SpriteWrapper.Support {
         return this.sprite;
     }
 
-    public dropBomb(){
+    public dropBomb() {
         if (this.bombs > 0) {
             this.bombs -= 1;
             this.sprite.startEffect(effects.halo, 2000);
@@ -314,7 +315,7 @@ class Player extends SpriteWrapper.Support {
         if (this.weaponKind == SpriteKind.WeaponPowerup2) { //aqee, new weapon
             for (let i = -this.weaponLevel; i <= this.weaponLevel; i += 2) {
                 const p = sprites.createProjectileFromSprite(Player.projectile2Img, this.sprite, 0, -50);
-                p.data["player"]=this.playerNo
+                p.data["player"] = this.playerNo
                 p.setScaleCore(1, this.weaponLevel)
                 p.x += i
                 p.y += Math.abs(i) - 12
@@ -331,17 +332,17 @@ class Player extends SpriteWrapper.Support {
                 }
             }
         } else { //this.weaponKind == SpriteKind.WeaponPowerup
-            const vList = [[],[0, -100], [0, -100], [50, -87], [87, -50], [0, 100]]
-            for(let i=1;i<=this.weaponLevel;i++){
-                if((i==1) != (this.weaponLevel>1)){
-                    const p=sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, vList[i][0], vList[i][1]);
+            const vList = [[], [0, -100], [0, -100], [50, -87], [87, -50], [0, 100]]
+            for (let i = 1; i <= this.weaponLevel; i++) {
+                if ((i == 1) != (this.weaponLevel > 1)) {
+                    const p = sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, vList[i][0], vList[i][1]);
                     p.data["player"] = this.playerNo
-                    if (i == 2 || i == 5) p.x+=1
+                    if (i == 2 || i == 5) p.x += 1
                 }
-                if(i>1){
+                if (i > 1) {
                     const p2 = sprites.createProjectileFromSprite(Player.projectileImg, this.sprite, -vList[i][0], vList[i][1]);
                     p2.data["player"] = this.playerNo
-                    if(i==2||i==5) p2.x-=1
+                    if (i == 2 || i == 5) p2.x -= 1
                 }
             }
         }
@@ -349,7 +350,7 @@ class Player extends SpriteWrapper.Support {
     }
 
     public gotHit(otherSprite?: Sprite): boolean { //return whether bounce away
-        if(this.isAbsence) return false
+        if (this.isAbsence) return false
 
         // Add some grace time when got hit
         if (game.runtime() > this.timeHitable) {
@@ -435,8 +436,8 @@ namespace Players {
     const players: Player[] = [];
 
     export function create() {
-        const MULTIPLAYER_ENABLED =  control.ramSize() > 1024 * 400;
-        const twoPlayerMode: boolean =  MULTIPLAYER_ENABLED// && game.ask("Two player mode?");
+        const MULTIPLAYER_ENABLED = control.ramSize() > 1024 * 400;
+        const twoPlayerMode: boolean = MULTIPLAYER_ENABLED// && game.ask("Two player mode?");
         addPlayerOne();
         if (twoPlayerMode) {
             addPlayerTwo();
@@ -456,23 +457,23 @@ namespace Players {
         players[1].spawnX = scene.screenWidth() / 2 + 30
 
         controller.player1.B.onEvent(ControllerButtonEvent.Pressed, () => {
-            console.logValue("B", players.length > 1 && players[1].isAbsence)
+            // console.logValue("B", players.length > 1 && players[1].isAbsence)
             if (players.length > 1 && players[1].isAbsence)
                 players[1].shoot()
         })
         controller.player1.A.onEvent(ControllerButtonEvent.Pressed, () => {
-            console.logValue("A", players.length > 1 && players[1].isAbsence)
+            // console.logValue("A", players.length > 1 && players[1].isAbsence)
             if (players.length > 1 && players[1].isAbsence)
                 players[1].dropBomb()
         })
 
         controller.player1.B.onEvent(ControllerButtonEvent.Repeated, () => {
-            console.logValue("B", players.length > 1 && players[1].isAbsence)
+            // console.logValue("B", players.length > 1 && players[1].isAbsence)
             if (players.length > 1 && players[1].isAbsence)
                 players[1].shoot()
         })
         controller.player1.A.onEvent(ControllerButtonEvent.Repeated, () => {
-            console.logValue("A", players.length > 1 && players[1].isAbsence)
+            // console.logValue("A", players.length > 1 && players[1].isAbsence)
             if (players.length > 1 && players[1].isAbsence)
                 players[1].dropBomb()
         })
@@ -533,7 +534,7 @@ namespace Players {
                 playerSprite.setPosition(2 * playerSprite.x - enemySprite.x, 2 * playerSprite.y - enemySprite.y)
                 scene.cameraShake(3, 700);
             }
-                enemy.gotHitBy(playerSprite);
+            enemy.gotHitBy(playerSprite);
         });
     }
 
@@ -545,16 +546,15 @@ namespace Players {
         players.forEach((p) => p.spawn())
     }
 
-    export function onAbsence(player:Player){
-        if(player.playerNo==2){
-            if(players.length<2)
+    export function onAbsence(player: Player) {
+        if (player.playerNo == 2) {
+            if (players.length < 2)
                 Players.addPlayerTwo()
             players[1].sprite.follow(players[0].sprite, 80, 300)
         }
-        
     }
 
-    export function onComeBack(player:Player){
+    export function onComeBack(player: Player) {
         if (player.playerNo == 2) {
             players[1].sprite.follow(null)
         }
