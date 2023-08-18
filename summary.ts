@@ -1,23 +1,5 @@
 
 namespace summary {
-    // game.showLongText("test content", DialogLayout.Bottom)
-    // game.splash("test","content")
-
-    /*
-SubKinds:
-    RedPlane.prototype,
-    GreenPlane,
-    GrayPlane,
-    BigPlane,
-    BomberPlane,
-    CombatHelicopter,
-    Frigate,
-    BattleShip,
-    Tank,
-    AntiAircraftTower,
-    AntiAircraftMissile
-    */
-
     let enemyKillList: number[][] = []  // [[subKind, score, countByPlayer1, countByPlayer2], ...]
     let enemyIcons: Image[] = []
     const imgStar = img`
@@ -67,56 +49,45 @@ SubKinds:
             s += " "
         return s
     }
- 
+
     export function show() {
         const imgHeader = image.create(140, 13)
         const imgItems = image.create(140, enemyKillList.length * 13)
         const imgFooter = image.create(140, 12)
         const fontColor = 15
 
-        const iCharsScore = 7
+        const iCharsScore = 8
         const iCharCount = 6
         //draw score board
         {
-            let img: Image
-            let xPadding = 0, y = 0
+            let xPadding = 0
 
             //header: title
             // img.fillRect(xPadding,0,160-xPadding*2,18,0)
-            img = imgHeader
-            img.print(lPadding("Scores", iCharsScore) + lPadding("P1", iCharCount) + lPadding("P2", iCharCount), xPadding, 0, 4)
-            img.drawLine(10, 10, img.width - 20, 10, 4)
-            y += 16
+            imgHeader.print(lPadding("Scores", iCharsScore) + lPadding("P1", iCharCount) + lPadding("P2", iCharCount), xPadding, 0, 4)
+            imgHeader.drawLine(10, 10, imgHeader.width - 20, 10, 4)
 
-            y = 0
-            img = imgItems
             //items
+            const total = [0, 0]
+            let y = 0
             enemyKillList.forEach((item, i) => {
-                img.drawTransparentImage(enemyIcons[i], xPadding + 5, y - 1)
+                imgItems.drawTransparentImage(enemyIcons[i], xPadding + 5, y - 1)
                 let s = lPadding(item[1].toString(), iCharsScore) + lPadding("x" + item[2], iCharCount) + lPadding("x" + item[3], iCharCount)
-                img.print(s, xPadding, y + 1, fontColor)
+                imgItems.print(s, xPadding, y + 1, fontColor)
+                total[0] += item[1] * item[2]
+                total[1] += item[1] * item[3]
                 y += 13
             })
 
             //footer: total
-            y = 0
-            img = imgFooter
-            img.drawLine(10, y, img.width - 20, y, 4)
-            y += 4
-            let total = enemyKillList.reduce((p, c, i) => {
-                p[0] += c[1] * c[2]
-                p[1] += c[1] * c[3]
-                return p
-            }, [0, 0])
-            img.print(lPadding(total[0] + "", iCharsScore + iCharCount) + lPadding(total[1] + "", iCharCount), xPadding, y, fontColor)
+            imgFooter.drawLine(10, 0, imgFooter.width - 20, 0, 4)
+            imgFooter.print(lPadding(total[0] + "", iCharsScore + iCharCount) + lPadding(total[1] + "", iCharCount), xPadding, 4, fontColor)
 
             //star
-            y = 0
-            img = imgHeader
             if (total[0] != total[1])
                 music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.InBackground)
             if (total[0] != total[1]) {
-                img.drawTransparentImage(imgStar, xPadding + (iCharsScore + iCharCount + (total[0] > total[1] ? 0 : iCharCount)) * 6 - 28, -1)
+                imgHeader.drawTransparentImage(imgStar, xPadding + (iCharsScore + iCharCount + (total[0] > total[1] ? 0 : iCharCount)) * 6 - 28, -1)
             }
 
             game.setDialogFrame(sprites.dialog.largeStar)
@@ -129,25 +100,31 @@ SubKinds:
         enemyIcons = []
     }
 
-    //for test
-    enemyKillList.push([EnemySubKind.RedPlane, 150, 1, 12])
-    enemyKillList.push([EnemySubKind.GreenPlane, 150, 11, 12])
-    enemyKillList.push([EnemySubKind.GrayPlane, 150, 11, 12])
-    enemyKillList.push([EnemySubKind.BigPlane, 150, 11, 12])
-    enemyKillList.push([EnemySubKind.BomberPlane, 150, 11, 12])
-    enemyKillList.push([EnemySubKind.CombatHelicopter, 150, 11, 12])
-    enemyKillList.push([EnemySubKind.Frigate, 150, 11, 12])
-    enemyKillList.push([EnemySubKind.BattleShip, 150, 11, 1])
-    enemyKillList.push([EnemySubKind.Tank, 150, 1, 12])
-    enemyKillList.push([EnemySubKind.AntiAircraftTower, 150, 11, 123])
-    enemyKillList.push([EnemySubKind.AntiAircraftMissile, 150, 111, 134])
+    //for test 
+    const iconPlane =
+        img`. . . . . . . . . . . . 
+            . . . . . . . . . . . . 
+            . . f 2 c . . . . c 4 . 
+            . . c 4 4 2 2 c c 4 2 . 
+            . 9 9 2 2 2 2 2 2 2 f . 
+            2 2 1 1 9 2 2 c c c c 2 
+            2 2 2 2 2 2 2 2 2 c f f 
+            . f 2 2 2 c f 4 2 2 . . 
+            . . . . f c f f 2 2 c . 
+            . . . . . c 2 f f . . . 
+            . . . . . . . . . . . . 
+            . . . . . . . . . . . . 
+            `
     for (let i = 0; i < 11; i++) {
-        const icon = image.create(12, 12)
-        enemyIcons.push(helpers.getImageByName("iconPlane"))
-        icon.fill(13)
-        icon.print(i.toString(), 0, 0, 2)
+        enemyKillList.push([
+            Math.pickRandom(EnemySubKind.enemySubKinds),
+            Math.randomRange(1, 20) * 50,
+            Math.randomRange(0, 15),
+            Math.randomRange(0, 15)])
+        enemyIcons.push(iconPlane.clone())
+        enemyIcons[i].replace(2, Math.randomRange(3, 15))
     }
-    // scene.setBackgroundImage(sprites.background.cityscape)
+    scene.setBackgroundImage(sprites.background.cityscape)
     // show()
     clear()
     /*

@@ -1,7 +1,7 @@
 class Player extends SpriteWrapper.Support {
     private static readonly MAX_LIFES = 5;
     private hits = 0;
-    private bombs = 3;
+    private bombs = 0;
     private weaponLevel = 1;
     private weaponKind = SpriteKind.WeaponPowerup;//aqee, for multi kind of weapons
     private timeHitable = 0;
@@ -148,7 +148,6 @@ class Player extends SpriteWrapper.Support {
         for (let pos of bombPositions) {
             const bomb = sprites.create(Player.bombImage, SpriteKind.BombPowerup);
             bomb.data["player"] = playerNo
-
             bomb.setFlag(SpriteFlag.RelativeToCamera, false);
             bomb.setFlag(SpriteFlag.Ghost | SpriteFlag.Invisible, true);
             bomb.setPosition(pos, scene.screenHeight() - 5);
@@ -477,7 +476,6 @@ namespace Players {
             if (players.length > 1 && players[1].isAbsence)
                 players[1].dropBomb()
         })
-
     }
 
     export function randomPlayer() {

@@ -14,6 +14,19 @@ namespace EnemySubKind {
     export const Tank = SpriteKind.create()
     export const AntiAircraftTower = SpriteKind.create()
     export const AntiAircraftMissile = SpriteKind.create()
+    export const enemySubKinds = [
+        EnemySubKind.RedPlane,
+        EnemySubKind.GreenPlane,
+        EnemySubKind.GrayPlane,
+        EnemySubKind.BigPlane,
+        EnemySubKind.BomberPlane,
+        EnemySubKind.CombatHelicopter,
+        EnemySubKind.Frigate,
+        EnemySubKind.BattleShip,
+        EnemySubKind.Tank,
+        EnemySubKind.AntiAircraftTower,
+        EnemySubKind.AntiAircraftMissile,
+    ]
 }
 
 function angleBetween(sprite1: Sprite, sprite2: Sprite): number {
@@ -256,7 +269,6 @@ abstract class BaseObject extends SpriteWrapper.Support {
 
 abstract class BaseEnemy extends BaseObject {
     public subKind: number
-
     protected remainingHits: number = hardcore ? 1 : 2;
     protected hits: number = hardcore ? 1 : 2;
     protected effectStarted = false
@@ -264,7 +276,6 @@ abstract class BaseEnemy extends BaseObject {
     constructor(image: Image, mov: Movement, hits: number = 1) {
         super(image, mov);
         this.subKind = this.sprite.kind()
-
 
         this.hits = hardcore ? hits * 2 : hits;
         this.remainingHits = this.hits;
@@ -606,7 +617,6 @@ class RedPlane extends Plane implements Enemy {
     constructor(mov: Movement) {
         super(RedPlane.image, mov);
         this.subKind = EnemySubKind.RedPlane
-
     }
 }
 
