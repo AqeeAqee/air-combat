@@ -51,28 +51,29 @@ namespace summary {
     }
 
     export function show() {
-        const imgHeader = image.create(140, 13)
-        const imgItems = image.create(140, enemyKillList.length * 13)
-        const imgFooter = image.create(140, 12)
+        const iCharsScore = 8
+        const iCharsCount = 6
+        const W= (iCharsScore+iCharsCount*2)*6 +8
+        const imgHeader = image.create(W, 13)
+        const imgItems = image.create(W, enemyKillList.length * 13)
+        const imgFooter = image.create(W, 12)
         const fontColor = 15
 
-        const iCharsScore = 8
-        const iCharCount = 6
         //draw score board
         {
             let xPadding = 0
 
             //header: title
             // img.fillRect(xPadding,0,160-xPadding*2,18,0)
-            imgHeader.print(lPadding("Scores", iCharsScore) + lPadding("P1", iCharCount) + lPadding("P2", iCharCount), xPadding, 0, 4)
-            imgHeader.drawLine(10, 10, imgHeader.width - 20, 10, 4)
+            imgHeader.print(lPadding("Scores", iCharsScore) + lPadding("P1", iCharsCount) + lPadding("P2", iCharsCount), xPadding, 0, 4)
+            imgHeader.drawLine(10, 10, imgHeader.width - 10, 10, 4)
 
             //items
             const total = [0, 0]
             let y = 0
             enemyKillList.forEach((item, i) => {
                 imgItems.drawTransparentImage(enemyIcons[i], xPadding + 5, y - 1)
-                let s = lPadding(item[1].toString(), iCharsScore) + lPadding("x" + item[2], iCharCount) + lPadding("x" + item[3], iCharCount)
+                let s = lPadding(item[1].toString(), iCharsScore) + lPadding("x" + item[2], iCharsCount) + lPadding("x" + item[3], iCharsCount)
                 imgItems.print(s, xPadding, y + 1, fontColor)
                 total[0] += item[1] * item[2]
                 total[1] += item[1] * item[3]
@@ -80,14 +81,14 @@ namespace summary {
             })
 
             //footer: total
-            imgFooter.drawLine(10, 0, imgFooter.width - 20, 0, 4)
-            imgFooter.print(lPadding(total[0] + "", iCharsScore + iCharCount) + lPadding(total[1] + "", iCharCount), xPadding, 4, fontColor)
+            imgFooter.drawLine(10, 0, imgFooter.width - 10, 0, 4)
+            imgFooter.print(lPadding(total[0] + "", iCharsScore + iCharsCount) + lPadding(total[1] + "", iCharsCount), xPadding, 4, fontColor)
 
             //star
             if (total[0] != total[1])
-                music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.InBackground)
+                music.play(music.melodyPlayable(new music.Melody('c6:2 a5:1 e6:1')), music.PlaybackMode.InBackground)
             if (total[0] != total[1]) {
-                imgHeader.drawTransparentImage(imgStar, xPadding + (iCharsScore + iCharCount + (total[0] > total[1] ? 0 : iCharCount)) * 6 - 28, -1)
+                imgHeader.drawTransparentImage(imgStar, xPadding + (iCharsScore + iCharsCount + (total[0] > total[1] ? 0 : iCharsCount)) * 6 - 28, -1)
             }
 
             game.setDialogFrame(sprites.dialog.largeStar)

@@ -16,8 +16,9 @@ StoryBook.play();
 /** Change Log
  *
 2023-8
+custom Image Dialog, with scolling
 add level summary, for both players, scoll with arrow keys
-custom image dialog, with scolling
+add island for ground-enemies, in randomLevels
 fix max 4 bomb to 3
 2022-1
 fix copilot z-index over pilot when following
@@ -49,7 +50,6 @@ perf tune, avoid set fire effect of enemy repeatly
 
 TODO:
 [bug] bombed when start first level
-add island for ground-enemies, in randomLevels
 load only one level a time, for save memory of device
 pause feature
 tune FPS.

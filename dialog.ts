@@ -53,13 +53,11 @@ namespace game {
                 this.image.blit(
                     left,
                     top + h - this.innerImageFooter.height,
-                    this.innerImageFooter.width,
-                    this.innerImageFooter.height,
+                    w,h,
                     this.innerImageFooter,
+                    this.offsetX + 0,
                     0,
-                    0,
-                    this.innerImageFooter.width,
-                    this.innerImageFooter.height,
+                    w, h,
                     true, false)
                 h -= this.innerImageFooter.height
             }
@@ -68,21 +66,20 @@ namespace game {
                 this.image.blit(
                     left,
                     top,
-                    this.innerImageHeader.width,
-                    this.innerImageHeader.height,
+                    w, h,
                     this.innerImageHeader,
+                    this.offsetX + 0,
                     0,
-                    0,
-                    this.innerImageHeader.width,
-                    this.innerImageHeader.height,
+                    w, h,
                     true, false)
                 h -= this.innerImageHeader.height
+                top += this.innerImageHeader.height
             }
 
             // this.innerImage=sprites.background.cityscape
             this.image.blit(
                 left,
-                top + this.innerImageHeader.height,
+                top ,
                 w,
                 h,
                 this.innerImage,
@@ -98,7 +95,6 @@ namespace game {
             const width = this.image.width
             const height = this.image.height
 
-            console.log(frame.width)
             this.unit = Math.floor(this.frame.width / 3);
             this.columns = Math.floor(width / this.unit);
             this.rows = Math.floor(height / this.unit);
@@ -225,7 +221,15 @@ namespace game {
                 dialog.scroll(0, 1)
             }
 
+            if (controller.left.isPressed()) {
+                dialog.scroll(1, 0)
+            }
 
+            if (controller.right.isPressed()) {
+                dialog.scroll(-1, 0)
+            }
+
+            //Switch frames:
             // const isLeft = controller.left.isPressed();
             // if (isLeft && !lpressed) {
             //     lpressed = true;
