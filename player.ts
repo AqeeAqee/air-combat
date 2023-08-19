@@ -157,47 +157,16 @@ class Player extends SpriteWrapper.Support {
         this.drawBombs();
         const bomb = this.bombSprites[0];
 
-        this.controller = this.playerNo === 2 ? controller.player2 : controller.player1;
-        // this.controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-        //     this.lastInputTime = game.runtime()
-        //     this.dropBomb()
-        // });
-
-        // this.controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-        //     this.lastInputTime = game.runtime()
-        //     this.shoot();
-        // });
-
-        if (this.playerNo == 2) {
-            controller.player1.B.onEvent(ControllerButtonEvent.Pressed, () => {
-                if (this.isAbsence)
-                    this.shoot()
-            })
-            controller.player1.A.onEvent(ControllerButtonEvent.Pressed, () => {
-                if (this.isAbsence)
-                    this.dropBomb()
-            })
-            controller.player1.B.onEvent(ControllerButtonEvent.Repeated, () => {
-                if (this.isAbsence)
-                    this.shoot()
-            })
-            controller.player1.A.onEvent(ControllerButtonEvent.Repeated, () => {
-                if (this.isAbsence)
-                    this.dropBomb()
-            })
-        }
-
-
-
+        this.controller = this.playerNo === 2 ? controller.player2 : controller.player1
         this.lastInputTime = game.runtime()
+
+        this.controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+            this.dropBomb()
+        });
 
         game.onUpdateInterval(250, function () {
             if (this.controller.B.isPressed()) {
                 this.shoot();
-            }
-
-            if (this.controller.A.isPressed()) {
-                this.dropBomb();
             }
 
             if (this.controller.left.isPressed() && this.lastDirection !== Direction.LEFT) {
@@ -224,20 +193,17 @@ class Player extends SpriteWrapper.Support {
             }
 
             if (this.playerNo === 2) {
-                if (controller.player2.buttons.find((b) => b.isPressed()))
+                if (controller.player2.buttons.find((btn) => btn.isPressed())){
                     this.lastInputTime = game.runtime()
-                // if (game.currentScene() && game.currentScene().followingSprites){
-                //     const followInfo = game.currentScene().followingSprites
-                //     console.log(["following count:", followInfo.length, ", noInputTime:", game.runtime() - this.lastInputTime, ", isAbsence:", this.isAbsence])
-                // }
-                if (!this.isAbsence && (game.runtime() - this.lastInputTime > 10000)) {
+                    if (this.isAbsence) {
+                        this.isAbsence = false
+                        Players.onComeBack(this)
+                        // console.log("unfollow")
+                    }
+                }else if (!this.isAbsence && (game.runtime() - this.lastInputTime > 10000)) {
                     this.isAbsence = true
                     Players.onAbsence(this)
                     // console.log("follow")
-                } else if (this.isAbsence && (game.runtime() - this.lastInputTime < 5000)) {
-                    this.isAbsence = false
-                    Players.onComeBack(this)
-                    // console.log("unfollow")
                 }
             }
         });
@@ -455,26 +421,15 @@ namespace Players {
         players[0].spawnX = scene.screenWidth() / 2 - 30
         players[1].spawnX = scene.screenWidth() / 2 + 30
 
-        controller.player1.B.onEvent(ControllerButtonEvent.Pressed, () => {
-            // console.logValue("B", players.length > 1 && players[1].isAbsence)
-            if (players.length > 1 && players[1].isAbsence)
-                players[1].shoot()
-        })
         controller.player1.A.onEvent(ControllerButtonEvent.Pressed, () => {
-            // console.logValue("A", players.length > 1 && players[1].isAbsence)
-            if (players.length > 1 && players[1].isAbsence)
+            players[0].dropBomb()
+            if (players[1].isAbsence)
                 players[1].dropBomb()
         })
 
         controller.player1.B.onEvent(ControllerButtonEvent.Repeated, () => {
-            // console.logValue("B", players.length > 1 && players[1].isAbsence)
-            if (players.length > 1 && players[1].isAbsence)
+            if (players[1].isAbsence)
                 players[1].shoot()
-        })
-        controller.player1.A.onEvent(ControllerButtonEvent.Repeated, () => {
-            // console.logValue("A", players.length > 1 && players[1].isAbsence)
-            if (players.length > 1 && players[1].isAbsence)
-                players[1].dropBomb()
         })
     }
 

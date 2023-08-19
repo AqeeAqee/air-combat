@@ -13,16 +13,17 @@ scene.setBackgroundColor(9);
 StoryBook.play();
 
 //////////////////////////////////
-/** Change Log
- *
+/** Change Log, Aqee Li
 2023-8
+fix btn events
+unified enemy scores
 custom Image Dialog, with scolling
 add level summary, for both players, scoll with arrow keys
 add island for ground-enemies, in randomLevels
 fix max 4 bomb to 3
 2022-1
 fix copilot z-index over pilot when following
-2022-12, Aqee Li
+2022-12
 adds/changes:
 always 2 plyers
 add title scene (handmade)
