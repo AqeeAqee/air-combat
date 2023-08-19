@@ -376,6 +376,10 @@ class Tank extends Vehicle implements Enemy {
             sprites.createProjectile(Tank.projectileImage, v.vx, v.vy, SpriteKind.EnemyProjectile, this.sprite);
         }
     }
+
+    public getScore(): number {
+        return this.hits * 5 * 3;
+    }
 }
 
 class AntiAircraftMissile extends Plane implements Enemy {
@@ -435,6 +439,9 @@ class AntiAircraftMissile extends Plane implements Enemy {
         return { image: rotate45(AntiAircraftMissile.image, AntiAircraftMissile.image45, degrees), vx: vc.vx, vy: vc.vy };
     }
 
+    public getScore(): number {
+        return this.hits * 5 * 2;
+    }
 
     public onDestroyed() {
         if (this.timeout1) {
@@ -493,6 +500,10 @@ class AntiAircraftTower extends Building implements Enemy {
         this.sprite.setImage(AntiAircraftTower.image);
         this.missileLoaded = false;
         setTimeout(() => this.missileLoaded = true, 1500);
+    }
+
+    public getScore(): number {
+        return this.hits * 5 * 2;
     }
 }
 
@@ -570,6 +581,10 @@ class CombatHelicopter extends Plane implements Enemy {
             const v = vComponents(100, a);
             sprites.createProjectile(CombatHelicopter.projectileImage, v.vx, v.vy, SpriteKind.EnemyProjectile, this.sprite);
         });
+    }
+
+    public getScore(): number {
+        return this.hits * 5 * 3;
     }
 }
 
@@ -686,7 +701,7 @@ class GrayPlane extends Plane implements Enemy {
     }
 
     public getScore(): number {
-        return 20;
+        return this.hits*5*4;
     }
 }
 
@@ -735,7 +750,7 @@ class BigPlane extends Plane implements Enemy {
     }
 
     public getScore(): number {
-        return 30;
+        return this.hits * 5 * 2;
     }
 }
 
@@ -794,8 +809,9 @@ class BomberPlane extends Plane implements Enemy {
         sprites.createProjectile(BomberPlane.projectileImage, 50, 87, SpriteKind.EnemyProjectile, this.sprite);
     }
 
+
     public getScore(): number {
-        return 100;
+        return this.hits * 5 * 2;
     }
 }
 
@@ -839,8 +855,9 @@ class Frigate extends Ship implements Enemy {
         sprites.createProjectile(Frigate.projectileImage, v.vx, v.vy, SpriteKind.EnemyProjectile, this.sprite);
     }
 
-    public getScore() {
-        return 20;
+
+    public getScore(): number {
+        return this.hits * 5 * 2;
     }
 }
 
@@ -966,8 +983,8 @@ class BattleShip extends Ship implements Enemy {
         sprites.createProjectile(BattleShip.projectileImage, v.vx, v.vy, SpriteKind.EnemyProjectile, this.sprite);
     }
 
-    public getScore() {
-        return 300;
+    public getScore(): number {
+        return this.hits * 5 * 2;
     }
 }
 

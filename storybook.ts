@@ -131,10 +131,16 @@ namespace StoryBook {
         return gameBuilder
             /*
                 .nextLevel("test level").with([
-                    { element: Elements.cloud1, after: 1, v: 2, pos: 120 },
-                    { element: Elements.cloud1, after: 10, v: 35, pos: 60 },
-                    { element: Enemies.greenPlane, v: 3, pos: 10, direction: Direction.LEFT },
-                    { element: Enemies.greenPlane, after: 10, v: 3, pos: 30, direction: Direction.RIGHT },
+                    { element: Enemies.redPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+                    { element: Enemies.greenPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+                    { element: Enemies.grayPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+                    { element: Enemies.bigPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+                    { element: Enemies.bomberPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+                    { element: Enemies.combatHelicopter, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+                    { element: Enemies.frigate, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+                    { element: Enemies.battleShip, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+                    { element: Enemies.tank, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+                    { element: Enemies.antiAircraftTower, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
                 ]).build()
                 */
             .nextLevel("Air attack").with([
