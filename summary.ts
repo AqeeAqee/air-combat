@@ -96,7 +96,7 @@ namespace summary {
 
             //star
             if (total[0] != total[1])
-                music.play(music.melodyPlayable(new music.Melody('c6:2 a5:1 e6:1')), music.PlaybackMode.InBackground)
+                music.playSound(' a5:1 c6:1 e6:3')
             if (total[0] != total[1]) {
                 imgHeader.drawTransparentImage(imgStar, xPadding + (iCharsScore + iCharsCount + (total[0] > total[1] ? 0 : iCharsCount)) * 6 - 28, -1)
             }

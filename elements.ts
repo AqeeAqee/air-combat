@@ -298,7 +298,7 @@ abstract class BaseEnemy extends BaseObject {
 
         if (this.remainingHits <= 0) {
             this.sprite.destroy(effects.fire, 100);
-            info.changeScoreBy(this.getScore())
+                info.changeScoreBy(this.getScore())
             music.playSound("C4:1");
 
             summary.destroiedEnemy(this, projectile)
