@@ -15,13 +15,13 @@ namespace game {
             super(width, height, frame, font, cursor);
         }
 
-        public setImage(img: Image, imgHeader?: Image, imgFooter?: Image) {
+        setImage(img: Image, imgHeader?: Image, imgFooter?: Image) {
             this.innerImage = img
             this.innerImageHeader = imgHeader
             this.innerImageFooter = imgFooter
         }
 
-        public scroll(x: number, y: number) {
+        scroll(x: number, y: number) {
             this.offsetX -= x
             this.offsetY -= y
             let h = this.textAreaHeight()
@@ -90,7 +90,7 @@ namespace game {
                 true, false)
         }
 
-        public setFrame(frame: Image) {
+        setFrame(frame: Image) {
             this.frame = frame
             const width = this.image.width
             const height = this.image.height

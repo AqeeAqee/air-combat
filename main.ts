@@ -15,6 +15,7 @@ StoryBook.play();
 //////////////////////////////////
 /** Change Log, Aqee Li
 2023-8
+scored by the player hit more, intead of last shot
 fix btn events
 unified enemy scores
 custom Image Dialog, with scolling
@@ -45,14 +46,11 @@ commented hardcore mode
 experience features:
 random generated level.
 
-fix:
+fixed:
 bigplane missing when moving left/right: w/h should swap after transposed image
 perf tune, avoid set fire effect of enemy repeatly
 
 TODO:
-[bug] bombed when start first level
 load only one level a time, for save memory of device
-pause feature
 tune FPS.
-
  */
