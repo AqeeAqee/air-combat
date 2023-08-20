@@ -271,6 +271,7 @@ abstract class BaseEnemy extends BaseObject {
     public subKind: number
     protected remainingHits: number = hardcore ? 1 : 2;
     protected hits: number = hardcore ? 1 : 2;
+    public hitsByPlayer:number[]=[0,0]
     protected effectStarted = false
 
     constructor(image: Image, mov: Movement, hits: number = 1) {
@@ -286,13 +287,16 @@ abstract class BaseEnemy extends BaseObject {
     }
 
     public gotHitBy(projectile?: Sprite): void {
-        if (projectile && projectile.kind() === SpriteKind.BombPowerup) {
-            this.remainingHits = Math.max(this.remainingHits - 11, 0);
-        } else {
-            this.remainingHits -= 1;
-        }
+        let hit=1
+        if (projectile && projectile.kind() === SpriteKind.BombPowerup) 
+            hit = Math.min(this.remainingHits, 10)
+    
+        this.remainingHits -= hit;
+        let playerNo = projectile.data["player"]
+        if (playerNo)
+            this.hitsByPlayer[playerNo-1]+=hit
 
-        if (this.remainingHits == 0) {
+        if (this.remainingHits <= 0) {
             this.sprite.destroy(effects.fire, 100);
             info.changeScoreBy(this.getScore())
             music.playSound("C4:1");

@@ -21,8 +21,17 @@ namespace summary {
         . . . . . . . . . . . . . . . .
     `
     export function destroiedEnemy(enemy: BaseEnemy, by: Sprite) {
-        let playerNo = by.data["player"]
-        if (!playerNo) return
+
+        let playerNo:number
+        if(enemy.hitsByPlayer[0]>enemy.hitsByPlayer[1]) playerNo=1
+        else if (enemy.hitsByPlayer[0] < enemy.hitsByPlayer[1]) playerNo = 2
+        else {
+            playerNo= by.data["player"]
+            if (!playerNo) return
+        }
+        if (by.data["player"] != playerNo)
+            console.log([by.data["player"],enemy.hitsByPlayer[0],enemy.hitsByPlayer[1],playerNo].join())
+        
         let item = enemyKillList.find((v) => v[0] == enemy.subKind)
         if (!item) {
             enemyKillList.push([enemy.subKind, enemy.getScore(), 0, 0])
@@ -35,6 +44,7 @@ namespace summary {
             if (img)
                 icon.blit(0, 0, 12, 12, img, 0, 0, img.width, img.height, true, false)
         }
+
         item[(playerNo as number) + 1] += 1
     }
 
