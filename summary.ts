@@ -29,8 +29,9 @@ namespace summary {
             playerNo= by.data["player"]
             if (!playerNo) return
         }
-        if (by.data["player"] != playerNo)
-            console.log([by.data["player"],enemy.hitsByPlayer[0],enemy.hitsByPlayer[1],playerNo].join())
+        //debug
+        // if (by.data["player"] != playerNo)
+        //     console.log([by.data["player"],enemy.hitsByPlayer[0],enemy.hitsByPlayer[1],playerNo].join())
         
         let item = enemyKillList.find((v) => v[0] == enemy.subKind)
         if (!item) {
