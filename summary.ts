@@ -37,13 +37,7 @@ namespace summary {
         if (!item) {
             enemyKillList.push([enemy.subKind, enemy.getScore(), 0, 0])
             item = enemyKillList[enemyKillList.length - 1]
-
-            const icon = image.create(12, 12)
-            // icon.fill(1)
-            enemyIcons.push(icon)
-            const img = enemy.sprite.image
-            if (img)
-                icon.blit(0, 0, 12, 12, img, 0, 0, img.width, img.height, true, false)
+            enemyIcons.push(enemy.icon)
         }
 
         item[(playerNo as number) + 1] += 1
@@ -83,7 +77,7 @@ namespace summary {
             const total = [0, 0]
             let y = 0
             enemyKillList.forEach((item, i) => {
-                imgItems.drawTransparentImage(enemyIcons[i], xPadding + 5, y - 1)
+                imgItems.drawTransparentImage(enemyIcons[i], xPadding + 5, y)
                 let s = lPadding(item[1].toString(), iCharsScore) + lPadding("x" + item[2], iCharsCount) + lPadding("x" + item[3], iCharsCount)
                 imgItems.print(s, xPadding, y + 1, fontColor)
                 total[0] += item[1] * item[2]
@@ -92,7 +86,7 @@ namespace summary {
             })
 
             //footer: total
-            imgFooter.drawLine(10, 0, imgFooter.width - 10, 0, 4)
+            imgFooter.drawLine(10, 2, imgFooter.width - 10, 2, 4)
             imgFooter.print(lPadding(total[0] + "", iCharsScore + iCharsCount) + lPadding(total[1] + "", iCharsCount), xPadding, 4, fontColor)
 
             //star
@@ -133,9 +127,9 @@ namespace summary {
             Math.randomRange(1, 20) * 50,
             Math.randomRange(0, 15),
             Math.randomRange(0, 15)])
-        enemyIcons.push(iconPlane.clone())
-        enemyIcons[i].replace(2, Math.randomRange(3, 15))
-    }
+            enemyIcons.push(iconPlane.clone())
+            enemyIcons[i].replace(2, Math.randomRange(3, 15))
+        }
     // scene.setBackgroundImage(sprites.background.cityscape)
     // show()
     clear()

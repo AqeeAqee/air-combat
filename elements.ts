@@ -272,15 +272,36 @@ abstract class BaseEnemy extends BaseObject {
     protected remainingHits: number = hardcore ? 1 : 2;
     protected hits: number = hardcore ? 1 : 2;
     public hitsByPlayer:number[]=[0,0]
+    public icon:Image //size=11 or 12
     protected effectStarted = false
 
     constructor(image: Image, mov: Movement, hits: number = 1) {
         super(image, mov);
-        this.subKind = this.sprite.kind()
-
+        this.icon= BaseEnemy.getIcon(image)
         this.hits = hardcore ? hits * 2 : hits;
         this.remainingHits = this.hits;
     }
+
+    static getIcon(img: Image) {
+        let size= Math.max(img.width,img.height)%2===0?12:11
+        const icon = image.create(size, size)
+        // console.log([img.width,img.height].join())
+        if (img) { //keep original w/h ratio
+            if (img.width > img.height) {
+                // console.logValue("h", size * img.height / img.width)
+                const h = size * img.height / img.width
+                icon.blit(0, (size - h) >> 1, size, h, img, 0, 0, img.width, img.height, true, false)
+            } else if (img.width < img.height) {
+                // console.logValue("w", size * img.width / img.height)
+                const w = size * img.width / img.height
+                icon.blit((size - w) >> 1, 0, w, size, img, 0, 0, img.width, img.height, true, false)
+            } else {
+                icon.blit(0, 0, size, size, img, 0, 0, img.width, img.height, true, false)
+            }
+        }
+        icon.flipY()
+        return icon
+}
 
     public getScore(): number {
         return 10;
@@ -570,6 +591,9 @@ class CombatHelicopter extends Plane implements Enemy {
 
     constructor(mov: Movement) {
         super(CombatHelicopter.image, mov, 5);
+        this.icon.fill(0)
+        this.icon.blit(0, 0, 11,11,CombatHelicopter.image45,6,0,17,17,true,false)
+        this.icon.flipY() 
         this.subKind = EnemySubKind.CombatHelicopter
         this.sprite.z = cloudZ - 10; // below the clouds
 
