@@ -722,7 +722,7 @@ namespace StoryBook {
     //aqee, add progress bar
     let spriteProgressBar: Sprite = sprites.create(image.create(160, 1), SpriteKind.UI)
     spriteProgressBar.setPosition(80, 120)
-    spriteProgressBar.z = 99
+    spriteProgressBar.z = 90
     spriteProgressBar.setFlag(SpriteFlag.RelativeToCamera, true)
     let totalTicks: number
     function updateProgressBar(level: Level, ticks: number) {
