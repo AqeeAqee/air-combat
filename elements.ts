@@ -11,6 +11,7 @@ namespace EnemySubKind {
     export const CombatHelicopter = SpriteKind.create()
     export const Frigate = SpriteKind.create()
     export const BattleShip = SpriteKind.create()
+    export const Carrier = SpriteKind.create()
     export const Tank = SpriteKind.create()
     export const AntiAircraftTower = SpriteKind.create()
     export const AntiAircraftMissile = SpriteKind.create()
@@ -23,6 +24,7 @@ namespace EnemySubKind {
         EnemySubKind.CombatHelicopter,
         EnemySubKind.Frigate,
         EnemySubKind.BattleShip,
+        EnemySubKind.Carrier,
         EnemySubKind.Tank,
         EnemySubKind.AntiAircraftTower,
         EnemySubKind.AntiAircraftMissile,
@@ -152,6 +154,11 @@ class Enemies {
     public static combatHelicopter = { color: 3, create: (mov: Movement) => new CombatHelicopter(mov) };
     public static frigate = { color: 10, create: (mov: Movement) => new Frigate(mov) };
     public static battleShip = { color: 4, create: (mov: Movement) => new BattleShip(mov) };
+    public static battleShip2 = { color: 4, create: (mov: Movement) => new BattleShip(mov,2) };
+    public static battleShip3 = { color: 4, create: (mov: Movement) => new BattleShip(mov,3) };
+    public static carrier = { color: 5, create: (mov: Movement) => new Carrier(mov) };
+    public static carrier2 = { color: 5, create: (mov: Movement) => new Carrier(mov,2) };
+    public static carrier3 = { color: 5, create: (mov: Movement) => new Carrier(mov,3) };
     public static tank = { color: 7, create: (mov: Movement) => new Tank(mov) };
     public static antiAircraftTower = { color: 12, create: (mov: Movement) => new AntiAircraftTower(mov) };
 
@@ -182,6 +189,7 @@ interface RelativeMovement {
     direction: Direction;
     v: number;
     pos: number;
+    f?: number;
 }
 
 interface AbsolutMovement {
@@ -189,6 +197,7 @@ interface AbsolutMovement {
     startY: number;
     vx: number;
     vy: number;
+    f?: number;
 }
 
 type Movement = AbsolutMovement | RelativeMovement;
@@ -210,6 +219,8 @@ abstract class BaseObject extends SpriteWrapper.Support {
         if (isRelativeMovement(mov)) {
             //mov = mov as RelativeMovement;
             sprite = sprites.create(rotate(image, mov.direction), SpriteKind.Enemy);
+            if(mov.f)
+                sprite.fy=mov.f
 
             let x: number, y: number, vx: number, vy: number;
             switch (mov.direction) {
@@ -246,6 +257,8 @@ abstract class BaseObject extends SpriteWrapper.Support {
             sprite = sprites.create(image, SpriteKind.Enemy);
             sprite.setPosition(mov.startX, mov.startY);
             sprite.setVelocity(mov.vx, mov.vy);
+            if(mov.f)
+                sprite.fy=mov.f
         }
 
         sprite.setFlag(SpriteFlag.AutoDestroy, true);
@@ -534,22 +547,47 @@ class AntiAircraftTower extends Building implements Enemy {
 
 class CombatHelicopter extends Plane implements Enemy {
     private static readonly image: Image = img`
-        ............b..........
-        ...........6b..........
-        ...........6b..........
-        ...........6b..........
+        .............1.........
+        ...........6b1.........
+        ...........6bc.........
+        ...........6b1.........
+        ...........6.1.........
         ...........6...........
-        ..........666..........
+        ...........6...........
         .........bbdbb.........
-        .......b1d6b6ddb.......
-        .......db16b6db1.......
-        ......b1db6b6b1db......
-        ......bd76bbb6adb......
+        .......b1d.b.ddb.......
+        .......db.6b6.b1.......
+        ......b1..6b6..db......
+        ......bd.6bbb6.db......
         ......dbbbbfbbbbd......
-        ......bd76bbb6adb......
-        ......b17b6b6badb......
-        .......db66b66b1.......
+        ......bd.6bbb6.db......
+        ......b1.b6b6..db......
+        .......db.6b6.b1.......
         .......b1d8b8ddb.......
+        .........bbdbb.........
+        .......................
+        .......................
+        .......................
+        .......................
+        .......................
+    `;
+    private static readonly image45: Image = img`
+        .......................
+        .......................
+        ....................6..
+        ...................6bb1
+        ..................6bb1.
+        ................66.b1..
+        .........bbdbb.666.1...
+        .......b1d.b.d6b6......
+        .......db..b66b6.......
+        ......b1..6b666db......
+        ......bd.6bbb6.db......
+        ......dbbbbfbbbbd......
+        ......bd.6bbb6.db......
+        ......b1..6b6..db......
+        .......db..b..b1.......
+        .......b1ddbdddb.......
         .........bbdbb.........
         .......................
         .......................
@@ -558,31 +596,6 @@ class CombatHelicopter extends Plane implements Enemy {
         .......................
         .......................
     `;
-    private static readonly image45: Image = img`
-            . . . . . . . . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . . . . . . . b .
-            . . . . . . . . . . . . . . . . . . . 6 b b .
-            . . . . . . . . . . . . . . . . . . 6 b b . .
-            . . . . . . . . . . . . . . . . 6 6 b b . . .
-            . . . . . . . . . b b d b b . 6 6 6 . . . . .
-            . . . . . . . b 1 d d b d d 6 b 6 . . . . . .
-            . . . . . . . d b d 7 b 6 6 b 6 . . . . . . .
-            . . . . . . b 1 d 7 6 b 6 6 6 d b . . . . . .
-            . . . . . . b d 7 6 b b b 6 6 d b . . . . . .
-            . . . . . . d b b b b f b b b b d . . . . . .
-            . . . . . . b d 8 6 b b b 6 a d b . . . . . .
-            . . . . . . b 1 d 8 6 b 6 a d d b . . . . . .
-            . . . . . . . d b d 8 b a d b 1 . . . . . . .
-            . . . . . . . b 1 d d b d d d b . . . . . . .
-            . . . . . . . . . b b d b b . . . . . . . . .
-            . . . . . . . . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . . . . . . . . .
-        `;
     private static readonly projectileImage: Image = img`
         . 2 .
         2 f 2
@@ -997,34 +1010,258 @@ class BattleShip extends Ship implements Enemy {
         ..................6666..................
     `;
 
-    
-    constructor(mov: Movement) {
-        super(BattleShip.image, mov, 100);
+    constructor(mov: Movement, level = 1) {
+        super(BattleShip.image, mov, 30);
         this.subKind = EnemySubKind.BattleShip
         // this.onUpdateInterval(2000, () => this.shoot());
-        
-        let helicopter: CombatHelicopter
-        let spawnStep=-5
+        this.sprite.z = 1
+        const parkingOffset = 28
+
+        let baby: BaseEnemy
+        let babyCount=0
+        let spawnStep = -6
+        if (isRelativeMovement(mov)) {
+           spawnStep -= 80/ (mov as RelativeMovement).v / .1
+        }
         this.onUpdateInterval(100, () => {
-            spawnStep++
-            if (spawnStep == 0) {
-                helicopter = new CombatHelicopter({ startX: this.sprite.x, startY: this.sprite.y, vx: this.sprite.vx, vy: this.sprite.vy })
-                helicopter.sprite.scale= 0.5
-            } else if (spawnStep == 11) {
-                helicopter.sprite.vx += Math.randomRange(10, -10)
-                helicopter.sprite.vy += Math.randomRange(10, 40)
-                spawnStep=-5
-            } else if(spawnStep>0){ 
-                helicopter.sprite.scale= 0.5+0.05*spawnStep
+            if (babyCount >= level * 5) {
+            } else {
+                spawnStep++
+                if (spawnStep == -3) {
+                    const movBaby = {
+                        startX: this.sprite.x, startY: this.sprite.y, vx: this.sprite.vx,
+                        vy: this.sprite.vy,
+                    }
+                    
+                    if (isRelativeMovement(mov)) {
+                        mov = mov as RelativeMovement
+                        switch (mov.direction) {
+                            case Direction.UP:
+                                movBaby.startY += parkingOffset
+                                break
+                            case Direction.LEFT:
+                                movBaby.startX += parkingOffset
+                                break
+                            case Direction.DOWN:
+                                movBaby.startY -= parkingOffset
+                                break
+                            case Direction.RIGHT:
+                                movBaby.startX -= parkingOffset
+                                break
+                        }
+                    }
+                    baby = new CombatHelicopter(movBaby)
+                    baby.sprite.scale = 0.5
+                } else if (spawnStep == 15) {
+                    baby.sprite.vx = Math.randomRange(-10, 10)
+                    baby.sprite.vy = Math.randomRange(10, 40)
+                    spawnStep = -6
+                    babyCount++
+                } else if (spawnStep > 0) {
+                    baby.sprite.scale = 0.5 + 0.5 / 15 * spawnStep
+                }
             }
         });
-
     }
 
     private shoot(): void {
         const a = angleBetween(this.sprite, Players.randomPlayer().getSprite());
         const v = vComponents(100, a);
         sprites.createProjectile(BattleShip.projectileImage, v.vx, v.vy, SpriteKind.EnemyProjectile, this.sprite);
+    }
+
+    public getScore(): number {
+        return 600;
+    }
+}
+
+class Carrier extends Ship implements Enemy{
+    private static readonly image: Image = img`
+        ............66666666666666666666666..........
+        ..........166ddddddddddddddddddddd661........
+        ...........66d66cbbbbbbbbbbbbbc66d66.1.......
+        .........1.66d66cdddddddddddddc66d661........
+        ..........166d66cd1dddd5dddd1dc66d66.1.......
+        .........1.66d66cd1dddd5dddd1dc66d661.1......
+        ..........166d66cd1dddd5dddd1dc66d66..1......
+        ...........66d66cdddddddddddddc66d66.1.......
+        ..........166d66cd1dddd5dddd1dc66d661.1......
+        ...........66d66cd1dddd5dddd1dc66d66.1.......
+        .........1.66d66cd1dddd5dddd1dc66d661.1......
+        ..........166d66cdddddddddddddc66d666..1.....
+        .........1.66d66cd1dddd5dddd1dc66d666.1......
+        .........1.66d66cd1dddd5dddd1dc66d666.1......
+        ..........666d66cd1dddd5dddd1dc666d661.......
+        ..........666d66cdddddddddddddc666d66.1......
+        ..........66d666cd1dddd5dddd1ddc66d66..1.....
+        ........1.66d666cd1dddd5dddd1ddc66d661.......
+        ..........66d66cdd1dddd5dddd1ddc66d66.11.....
+        ..........66d66cdddddddddddddddc66d66.1.1....
+        ........1.66d66cdd1dddd5dddd1ddc66d661.1.....
+        .........166d66cdd1dddd5dddd1ddc66d66...1....
+        .......1..66d66cdd1dddd5dddd1ddc66d666.1.....
+        .........166d66cdddddddddddddddc66d666.1.1...
+        ........1.66d66cdd1dddd5dddd1ddc66d6666.1....
+        .....1.1.666d66cdd1dddd5dddd1ddc666d6666.1...
+        ......1.666d666cdd1dddd5dddd1ddcc66d66661....
+        ....1..6666d66cdddddddddddddddddcc66d666.1...
+        .....16666d66cdddd1dddd5dddd1ddddc666d666.1..
+        ..1.1.6666d66cdddd1dddd5dddd1dddddc666d66.1..
+        ...1.6666d66cddddd1dddd5dddd1ddddddc66d661...
+        ..1.6666d66cdddddddddddddddddddddddc66d66.1..
+        .1.1666d666ddddbdd1dddd5dddd1ddddedc66d661...
+        .1.666d666cddddbdd1dddd5dddd1ddddddc66d661.1.
+        1.1666d66cdddddbdd1dddd5dddd1ddddedc66d66.1..
+        .1666d66cddddddddddddddddddddddddddc66d661.1.
+        1.66d666cddd5dddbd1dddd5dddd1ddddedc66d66....
+        1.66d66cdddd5dddbd1dddd5dddd1ddddddc66d66.1.1
+        .166d66cdddd5dddbd1dddd5dddd1ddddedc66d661.1.
+        1.66d66cdddd5ddddddddddddddddddddddc66d66.1.1
+        .166d66cdddddddddb1dddd5dddd1ddddddc66d661.1.
+        .166d66cbdddd5dddb1dddd5dddd1ddddddc66d661...
+        1.66d66cbdddd5dddb1dddd5dddd1ddddddc66d66.1.1
+        .166d66cbdddd5dddddddddddddddddbdddc66d661.1.
+        1.66d66cbdddd5dddd1dddd5dddd1ddbdbdc66d66.1..
+        1.66d66cddddddddddbdddd5dddd1dbbbbdc66d66.1.1
+        .166d66cdbdddd5ddd1dddd5dddd1ddbdbdc66d661.1.
+        1.66d66cdbdddd5ddddddddddddddddbdddc66d66.1.1
+        .166d66cdbdddd5ddd1bddd5dddd1dddbddc66d661.1.
+        1.66d66cdddddddddd1bddd5dddd1dddbdbc66d661.1.
+        1.66d66cddbdddd5dd1dddd5dddd1ddbbbbc66d66.1..
+        .166d66cddbdddd5ddddddddddddddddbdbc66d66.1.1
+        1.66d66cddbdddd5dd1dbdd5dddd1dddbddc66d661.1.
+        .166d66cddbddddddd1dbdd5dddd1ddddddc66d66.1.1
+        .166d66cdddddddddd1dbdd5dddd1ddddddc66d661.1.
+        1.66d66cdddbdddd5ddddddddddddddddddc66d66.1..
+        .166d66cdddbdddd5d1ddbd5dddd1dddcccc66d66.1.1
+        ..66d66cdddbdddd5d1ddbd5dddd1ddccccc66d661.1.
+        ..66d66cdddddddddddddbd5dddd1ddcbbcc66d66.1.1
+        1.66d66cddddbddddd1ddddddddddddcbbbc66d661.1.
+        ..66d66cddddbdddd51dddd5dddd1ddcbbbc66d66.1..
+        .166d66cddddbdddd51dddb5dddd1ddcbbbc66d66.1.1
+        .166d66cddddbdddddddddb5dddd1ddcbbcc66d661.1.
+        1.66d66cdddddddddddddddddddddddccccc66d66.1.1
+        ..66d66cdddddbdddd5dddd5dddd1ddccfcc66d661...
+        .166d66cdddddbdddd5ddddbdddd1ddccfcc66d66.1.1
+        .166d66cdddddbdddd5dddd5dddd1ddccccc66d661.1.
+        1.66d66cdddddddddddddddddddddddcbbcc66d66.1..
+        ..66d66cddddddbddd15ddd5bddd1ddcbbbc66d66.1.1
+        ..66d66cddbdddbddd15ddd5bddd1ddcbbbc66d661.1.
+        ..66d66cbbbbbdbddd1dddd5dddd1ddcbbbc66d66.1.1
+        .166d66cddbdddbddddd5ddddbdddddcbbcc66d661.1.
+        1.66d66cdbbbdddddd1d5dd5dbdd1ddccccc66d66.1..
+        ..66d66cdddddddbdd1d5dd5dbdd1ddccccc66d66.1.1
+        ..66d66cdddbdddbdd1d5dd5dddd1ddccfcc66d661.1.
+        .166d66cdbbbbbdbddddd5ddddbddddccfcc66d66.1.1
+        1.66d66cdddbdddddd1dd5d5ddbd1ddccccc66d661.1.
+        ..66d66cddbbbdddbd1dd5d5dddd1dddcccc66d66.1..
+        .166d66cddddddddbd1dddd5dddd1ddddddc66d661.1.
+        .166d66cddddbddddddddddddddddddddddc66d66.1.1
+        1.66d66cddbbbbbddd1dddd5dddd1ddddddc66d66.1..
+        ..66d66cddddbddddd1dddd5dddd1ddbdddc66d661.1.
+        .166d66cdddbbbdddd1dddd5dddd1ddbdbdc66d66.1.1
+        .166d66ccdddddddddddddddddddddbbbbdc66d661.1.
+        1.66d6666cccdddddd1dddd5dddd1ddbdbdc66d66.1.1
+        ..666d66666cdddddd1dddd5dddd1ddbdddc66d66.1..
+        ...666d6666cdddddd1dddd5dddd1ddddddc66d661...
+        ....666d666cdddddddddddddddddddddddc66d66.1.1
+        ...1.666d66cdddddd1dddd5dddd1ddddddc66d661.1.
+        .....666d66cbddddd1dddd5dddd1dddddbc66d66.1.1
+        ....1.66d66cbddddd1dddd5dddd1dddddbc66d661.1.
+        ....1.66d66cbdddddddddddddddddddddbc66d66.1..
+        ...1..66d666cddddd1dddd5dddd1dddddc666d66.1.1
+        .....166d666cddddd1dddd5dddd1dddddc66d6661.1.
+        ....1.66d666cddddd1dddd5dddd1dddddc66d666.1.1
+        ....1.66d666cdddddddddddddddddddddc66d66.1.1.
+        ......666d66cddddd1dddd5dddd1dddddc66d66..1.1
+        .....1666d66cdfddd1dddd5dddd1dddfdc66d661.1..
+        ....1.666d66cdfddd1dddd5dddd1dddfdc66d66.1.1.
+        ....1..66d66cdfdddddddddddddddddfdc66d66.11.1
+        .......66d66cddddd1dddd5dddd1dddddc66d66.1.1.
+        .....1.66d66cddddd1dddd5dddd1dddddc66d661.1..
+        ....1..66d66cbdddd1dddd5dddd1dddddc66d66.1...
+        .......66d66cbdddddddddddddddddddbc6d6661....
+        .......66d66cbdddd1dddd5dddd1ddddb66d666.1...
+        .....1.666d66cdddd1dddd5dddd1ddddb66d6661....
+        ....1.1666d66cdddd1dddd5dddd1ddddc66d666.1...
+        .....1.666d66cdddddddddddddddddddc66d6661....
+        .....1.666d66cdddddddddddddddddddc66d66.1....
+        ........66d66cdddddddddddddddddddc66d66......
+        ......1.66d66cdddddddddddffddddddc66d661.....
+        .....1..66d66cbbbbbbbbbbbbbbbbbbbc66d66.1....
+        .....1..66d66cbbbbbbbbbbbbbbbbbbbc66d66.1....
+        ........66d6666666666666666666666666d66......
+        ......1.66d6666666666666666666666666d661.....
+        ....1...66ddddddddddddddddddddddddddd66.1....
+        ....1...6666666666666666666666666666666.1....
+        ......1..66666666666666666666666666666.......
+        ...........1.1.1.11.........11.1.1.1..1......
+        ............1.1.1.............1.1.1..........
+        ............1.1.1.............1.1.1..........
+        ...........1.1.1.11.........11.1.1.1.........
+        ............1.1.1.............1.1.1..........
+        ...........1.1.1.11.........11.1.1.1.........
+        ...........1.1.1.11.........11.1.1.1.........
+        ............1.1.1.............1.1.1..........
+    `;
+    
+    constructor(mov: Movement, level = 1) {
+        super(Carrier.image, mov, 100);
+        this.subKind = EnemySubKind.Carrier
+        this.sprite.setFlag(SpriteFlag.Ghost, true);
+        this.sprite.z = 0
+
+        let baby: BaseEnemy
+        let babyCount = 0
+        let spawnStep = -45 //-50
+        const takeoffStep = 15
+        
+        // this.sprite.onDestroyed(()=>baby.sprite.destroy())
+        
+        this.onUpdateInterval(100, () => {
+            if (babyCount >= level * 5) {
+                this.sprite.setFlag(SpriteFlag.Ghost, false);
+                this.sprite.setFlag(SpriteFlag.AutoDestroy, true);
+                this.sprite.vy = 5
+                this.sprite.ay = 15
+                this.sprite.fy = 0
+            } else {
+                spawnStep++
+                if (spawnStep == 0) {
+                    const mov = {
+                        startX: this.sprite.x, startY: (this.sprite.y + this.sprite.bottom) >> 1, vx: this.sprite.vx,
+                        vy: -22
+                    }
+                    if (level == 1)
+                        baby = new GreenPlane(mov)
+                    else if (level == 2)
+                        baby = new RedPlane(mov)
+                    else if (level == 3)
+                        baby = new GrayPlane(mov)
+                    baby.sprite.scale = 0.5
+                    baby.sprite.ay = -56
+                    baby.sprite.setFlag(SpriteFlag.AutoDestroy, false);
+                    baby.sprite.setFlag(SpriteFlag.Ghost, true);
+                    const img = baby.sprite.image.clone()
+                    img.flipY()
+                    baby.sprite.setImage(img)
+                } else if (0 < spawnStep && spawnStep < takeoffStep) {
+                    baby.sprite.scale = 0.2 + 0.8 / takeoffStep * spawnStep
+                } else if (spawnStep == takeoffStep) {
+                    const img = baby.sprite.image
+                    img.flipY()
+                    baby.sprite.setImage(img)
+                    baby.sprite.setFlag(SpriteFlag.Ghost, false);
+                    baby.sprite.ay = 0
+                    baby.sprite.vx = Math.randomRange(-10, 10)
+                    baby.sprite.vy = Math.randomRange(20, 40)
+                } else if (spawnStep == 25) {
+                    babyCount++
+                    baby.sprite.setFlag(SpriteFlag.AutoDestroy, true);
+                    spawnStep = -1
+                }
+            }
+        });
     }
 
     public getScore(): number {

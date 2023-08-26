@@ -12,6 +12,7 @@ namespace StoryBook {
 
     interface EventProps {
         v: number;
+        f?: number;
         pos: number;
         after?: number;
         delay?: number;
@@ -79,7 +80,8 @@ namespace StoryBook {
                             createElement: () => props.element.create({
                                 direction: props.direction,
                                 pos,
-                                v: props.v
+                                v: props.v,
+                                f: props.f
                             })
                         }
                     );
@@ -129,9 +131,14 @@ namespace StoryBook {
         const halfHeight: number = scene.screenHeight() / 2;
 
         return gameBuilder
-            /*
-                .nextLevel("test level").with([
-                    { element: Enemies.battleShip, after: 0, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+        /*
+        .nextLevel("test level").with([
+                    { element: Enemies.battleShip, after: 0, direction:Direction.DOWN, times: 1, v: 10, pos: 88, offset: 30, delay: 15 },
+                    { element: Enemies.battleShip, after: 20, direction:Direction.LEFT, times: 1, v: 10, pos: 22, offset: 30, delay: 15 },
+                    
+                    { element: Enemies.carrier2, after: 50, times: 1, v: 33, f: 4, pos: 20, offset: 30, delay: 15 },
+                    { element: Enemies.carrier3, after: 50, times: 1, v: 34, f: 4, pos: 140, offset: 30, delay: 15 },
+                    { element: Enemies.carrier, after: 0, times: 1, v: 34, f: 4, pos: 80, offset: 30, delay: 15 },
                     { element: Elements.cloud1, after: 100, v: 30, pos: 120 },
                     
                     { element: Enemies.redPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
@@ -188,7 +195,8 @@ namespace StoryBook {
                 { element: Enemies.grayPlane, after: 0, v: 100, pos: 45, direction: Direction.RIGHT },
                 { element: Enemies.grayPlane, after: 7, v: 100, pos: 20, direction: Direction.LEFT },
                 { element: Enemies.grayPlane, after: 0, v: 100, pos: 25, direction: Direction.RIGHT },
-
+                    
+                { element: Enemies.carrier, after: 10, times: 1, v: 34, f: 4, pos: 80, offset: 30, delay: 15 },
             ])
             .build()
             .nextLevel("Naval battle").with([
@@ -497,8 +505,8 @@ namespace StoryBook {
         game.splash("Level " + level.level, level.description);
     }
 
-    function onLevelComplete(ticks: number) {
-        if (ticks == 80) Players.levelCompleted()
+    function onLevelComplete() {
+        Players.levelCompleted()
     }
 
     function onLevelBegin() {
@@ -519,7 +527,7 @@ namespace StoryBook {
 
         levelInfo(currentLevel);
         onLevelBegin()
-        let lastElementAtTick = 0;
+        let clearedTick = 0;
         let ticks = 0;
         game.onUpdateInterval(hardcore ? 60 : 100, () => {
             ticks++;
@@ -528,32 +536,29 @@ namespace StoryBook {
             while (currentLevel.storyBook.length > 0 && currentLevel.storyBook[0].t <= ticks) {
                 const event = currentLevel.storyBook.shift();
                 event.createElement();
-                lastElementAtTick = ticks;
             }
 
             if (currentLevel.storyBook.length == 0) {
-                onLevelComplete(ticks - lastElementAtTick)
-                // End of level
-                if (ticks > lastElementAtTick + 100) {
+                if (!clearedTick) {
+                    if (SpriteWrapper.all().every((v) => !(v instanceof BaseEnemy))) {
+                        clearedTick = ticks;
+                        onLevelComplete()
+                    }
+                } else if (ticks > clearedTick + 20) {// End of level
                     // 10s after the last element has been created
-
+                    
                     summary.show()
                     summary.clear()
 
-                    //temp, forever random levels
+                    // next level
                     currentLevel = designedLevels.shift();
                     if (!currentLevel)
+                        //forever random levels
                         currentLevel = randomLevels().shift()
-                    // if (currentLevel) {//with forever generated levels not required anymore
-                    // next level
                     ticks = 0;
-                    lastElementAtTick = 0
+                    clearedTick = 0
                     levelInfo(currentLevel);
                     onLevelBegin()
-                    // } else {
-                    //     // light.showAnimation(light.runningLightsAnimation, 3000);
-                    //     game.over(true);
-                    // }
                 }
             }
         })
