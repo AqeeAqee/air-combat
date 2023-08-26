@@ -1021,7 +1021,7 @@ class BattleShip extends Ship implements Enemy {
         let babyCount=0
         let spawnStep = -6
         if (isRelativeMovement(mov)) {
-           spawnStep -= 80/ (mov as RelativeMovement).v / .1
+           spawnStep -= (80/ (mov as RelativeMovement).v / .1)|0
         }
         this.onUpdateInterval(100, () => {
             if (babyCount >= level * 5) {

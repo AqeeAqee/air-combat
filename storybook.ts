@@ -289,7 +289,8 @@ namespace StoryBook {
                 { element: Elements.island3, after: 10, v: 10, pos: 10, offset: 0, delay: 20 },
                 { element: Enemies.tank, after: 12, times: 3, v: 10, pos: 7, offset: 0, delay: 15 },
 
-                { element: Elements.cloud2, after: 100, v: 15, pos: 30, offset: 50, delay: 10 },
+                { element: Enemies.carrier2, after: 10, times: 1, v: 34, f: 4, pos: 80, offset: 30, delay: 15 },
+                { element: Elements.cloud2, after: 40, v: 15, pos: 30, offset: 50, delay: 10 },
             ])
             .build()
 
@@ -346,6 +347,8 @@ namespace StoryBook {
 
                 { element: Enemies.redPlane, after: 0, v: 35, pos: scene.screenWidth() - 25, direction: Direction.UP },
                 { element: Enemies.redPlane, after: 0, v: 50, pos: scene.screenHeight() - 25, direction: Direction.LEFT },
+
+                { element: Enemies.carrier3, after: 20, times: 1, v: 34, f: 4, pos: 80, offset: 30, delay: 15 },
             ])
             .build()
 
@@ -518,6 +521,8 @@ namespace StoryBook {
         Players.create()
 
         const designedLevels = setup();
+            designedLevels.shift()
+            designedLevels.shift()
         let currentLevel = designedLevels.shift();
 
         // for testing 
