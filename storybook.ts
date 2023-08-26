@@ -131,6 +131,9 @@ namespace StoryBook {
         return gameBuilder
             /*
                 .nextLevel("test level").with([
+                    { element: Enemies.battleShip, after: 0, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+                    { element: Elements.cloud1, after: 100, v: 30, pos: 120 },
+                    
                     { element: Enemies.redPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
                     { element: Enemies.greenPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
                     { element: Enemies.grayPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },

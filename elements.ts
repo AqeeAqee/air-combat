@@ -997,12 +997,28 @@ class BattleShip extends Ship implements Enemy {
         ..................6666..................
     `;
 
+    
     constructor(mov: Movement) {
-        super(BattleShip.image, mov, 40);
+        super(BattleShip.image, mov, 100);
         this.subKind = EnemySubKind.BattleShip
-        this.onUpdateInterval(2000, () => {
-            this.shoot();
+        // this.onUpdateInterval(2000, () => this.shoot());
+        
+        let helicopter: CombatHelicopter
+        let spawnStep=-5
+        this.onUpdateInterval(100, () => {
+            spawnStep++
+            if (spawnStep == 0) {
+                helicopter = new CombatHelicopter({ startX: this.sprite.x, startY: this.sprite.y, vx: this.sprite.vx, vy: this.sprite.vy })
+                helicopter.sprite.scale= 0.5
+            } else if (spawnStep == 11) {
+                helicopter.sprite.vx += Math.randomRange(10, -10)
+                helicopter.sprite.vy += Math.randomRange(10, 40)
+                spawnStep=-5
+            } else if(spawnStep>0){ 
+                helicopter.sprite.scale= 0.5+0.05*spawnStep
+            }
         });
+
     }
 
     private shoot(): void {
@@ -1012,7 +1028,7 @@ class BattleShip extends Ship implements Enemy {
     }
 
     public getScore(): number {
-        return this.hits * 5 * 2;
+        return 1000;
     }
 }
 

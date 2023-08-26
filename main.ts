@@ -15,6 +15,7 @@ StoryBook.play();
 //////////////////////////////////
 /** Change Log, Aqee Li
 2023-8
+spawn helicopter on battle ship
 scored by the player hit more, intead of last shot
 fix btn events
 unified enemy scores
@@ -51,6 +52,7 @@ bigplane missing when moving left/right: w/h should swap after transposed image
 perf tune, avoid set fire effect of enemy repeatly
 
 TODO:
+add aircraft carrier
 load only one level a time, for save memory of device
 tune FPS.
  */
