@@ -521,8 +521,6 @@ namespace StoryBook {
         Players.create()
 
         const designedLevels = setup();
-            designedLevels.shift()
-            designedLevels.shift()
         let currentLevel = designedLevels.shift();
 
         // for testing 
