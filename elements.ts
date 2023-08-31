@@ -176,6 +176,7 @@ class Enemies {
                     spark.sourceFollow = sprPlayer
                     spark.targetFollow = object.sprite
                     spark.lifespan=1000  
+                    spark.onRequestColor(()=>{return Math.pickRandom([1,3,11,13])})
                 }
                 (object as Enemy).gotHitBy(sprite);
             }
