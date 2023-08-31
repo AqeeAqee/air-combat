@@ -422,9 +422,10 @@ namespace Players {
         players[1].spawnX = scene.screenWidth() / 2 + 30
 
         controller.player1.A.onEvent(ControllerButtonEvent.Pressed, () => {
-            players[0].dropBomb()
             if (players[1].isAbsence)
-                players[1].dropBomb()
+                players[Math.randomRange(0,1)].dropBomb()
+            else
+                players[0].dropBomb()
         })
 
         controller.player1.B.onEvent(ControllerButtonEvent.Repeated, () => {
