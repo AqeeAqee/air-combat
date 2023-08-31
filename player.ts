@@ -398,7 +398,7 @@ class Player extends SpriteWrapper.Support {
 }
 
 namespace Players {
-    const players: Player[] = [];
+    export const players: Player[] = [];
 
     export function create() {
         const MULTIPLAYER_ENABLED = control.ramSize() > 1024 * 400;

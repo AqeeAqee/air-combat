@@ -165,8 +165,18 @@ class Enemies {
     public static antiAircraftMissile = (x: number, y: number) => new AntiAircraftMissile(x, y);
 
     public static destroyAll(sprite: Sprite): void {
+        const playerNo = sprite.data["player"] as number
+        let sprPlayer:Sprite
+        if (playerNo)
+            sprPlayer= Players.players[playerNo-1].sprite
         SpriteWrapper.all().forEach((object: SpriteWrapper.SpriteWrapper) => {
             if (object instanceof BaseEnemy) {
+                if (sprPlayer) {
+                    const spark = new lightning_effect.lightning(0, 0, 0, 0, 0, 1)
+                    spark.sourceFollow = sprPlayer
+                    spark.targetFollow = object.sprite
+                    spark.lifespan=1000  
+                }
                 (object as Enemy).gotHitBy(sprite);
             }
         });

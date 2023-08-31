@@ -7,7 +7,8 @@
         "pxt-heap": "github:jwunderl/pxt-heap#v0.0.11",
         "pxt-interval": "github:ractive/pxt-interval#v0.0.3",
         "pxt-spritewrapper": "github:ractive/pxt-spritewrapper#v0.0.4",
-        "arcade-dialog": "github:aqeeaqee/arcade-dialog#59029bfeaf3b30ce793d8d211dc17e697905801a"
+        "arcade-dialog": "github:aqeeaqee/arcade-dialog#59029bfeaf3b30ce793d8d211dc17e697905801a",
+        "arcade-lightning": "github:aqeeaqee/arcade-lightning"
     },
     "files": [
         "main.ts",
