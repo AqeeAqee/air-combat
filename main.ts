@@ -15,6 +15,7 @@ StoryBook.play();
 //////////////////////////////////
 /** Change Log, Aqee Li
 2023-8
+add lightning for bomb
 spawn helicopter on battle ship
 scored by the player hit more, intead of last shot
 fix btn events
