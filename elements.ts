@@ -175,8 +175,10 @@ class Enemies {
                     const spark = new lightning_effect.lightning(0, 0, 0, 0, 0, 1)
                     spark.sourceFollow = sprPlayer
                     spark.targetFollow = object.sprite
-                    spark.lifespan=1000  
-                    spark.onRequestColor(()=>{return Math.pickRandom([1,3,11,13])})
+                    spark.updateInterval=30
+                    spark.lifespan=1000
+                    spark.onRequestColor(()=>{return Math.pickRandom([1,1,3,11,13])})
+                    object.setOnDestroyed(()=>spark.destory())
                 }
                 (object as Enemy).gotHitBy(sprite);
             }
@@ -224,6 +226,7 @@ function isAbsoluteMovement(mov: Movement): mov is AbsolutMovement {
 abstract class BaseObject extends SpriteWrapper.Support {
     protected movement: Movement;
     private intervalFunctions: { (): void; }[] = [];
+    private handlerOnDestroyed:()=>void
 
     private static createSprite(image: Image, mov: Movement): Sprite {
         let sprite: Sprite = undefined;
@@ -281,8 +284,14 @@ abstract class BaseObject extends SpriteWrapper.Support {
         this.movement = mov;
     }
 
+    public setOnDestroyed(handler: ()=>void){
+        this.handlerOnDestroyed= handler
+    }
+
     public onDestroyed(): void {
         this.intervalFunctions.forEach(f => f());
+        if(this.handlerOnDestroyed)
+            this.handlerOnDestroyed()
     }
 
     public onUpdateInterval(interval: number, f: () => void) {

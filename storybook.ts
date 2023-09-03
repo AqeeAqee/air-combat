@@ -367,7 +367,7 @@ namespace StoryBook {
                 { element: Enemies.grayPlane, v: 60, pos: halfWidth - 5 },
                 { element: Enemies.grayPlane, v: 60, pos: halfWidth + 5, direction: Direction.UP },
 
-                { element: Elements.cloud1, after: 70, times: 3, v: 20, pos: 30, offset: 45, delay: 20 },
+                { element: Elements.cloud1, after: 20, times: 3, v: 20, pos: 30, offset: 45, delay: 20 },
                 { element: Enemies.bomberPlane, after: 30, v: 20, pos: halfWidth, direction: Direction.UP },
 
                 { element: Elements.cloud2, after: 30, times: 3, v: 15, pos: 30, offset: 50, delay: 10 },
@@ -400,15 +400,15 @@ namespace StoryBook {
                 { element: Enemies.frigate, after: 91, times: 3, v: 10, delay: 0, pos: 20, offset: 30, direction: Direction.LEFT },
                 { element: Enemies.frigate, times: 3, v: 10, delay: 0, pos: 35, offset: 30, direction: Direction.RIGHT },
 
-                { element: Elements.cloud2, after: 90, times: 3, v: 7, pos: 50, offset: 40, delay: 15 },
+                { element: Elements.cloud2, after: 40, times: 3, v: 7, pos: 50, offset: 40, delay: 15 },
                 { element: Enemies.bomberPlane, after: 30, times: 2, v: 12, delay: 25, pos: 50, offset: 70 },
 
-                { element: Elements.cloud1, after: 50, v: 15, pos: 30 },
-                { element: Elements.cloud1, after: 50, v: 15, pos: 130 },
-                { element: Elements.cloud1, after: 50, v: 15, pos: 80 },
+                { element: Elements.cloud1, after: 20, v: 15, pos: 30 },
+                { element: Elements.cloud1, after: 20, v: 15, pos: 130 },
+                { element: Elements.cloud1, after: 20, v: 15, pos: 80 },
 
                 { element: Elements.cloud2, times: 3, v: 7, pos: 115, offset: -40, delay: 15 },
-                { element: Enemies.bomberPlane, after: 50, times: 3, v: 10, delay: 0, pos: 25, offset: 54 },
+                { element: Enemies.bomberPlane, after: 30, times: 3, v: 10, delay: 0, pos: 25, offset: 54 },
                 { element: Elements.cloud1, times: 2, v: 20, pos: 95, offset: 45, delay: 10 },
                 { element: Enemies.grayPlane, after: 50, times: 2, v: 70, delay: 0, pos: 50, offset: 60 },
                 { element: Enemies.grayPlane, after: 7, v: 70, delay: 0, pos: halfWidth, offset: 0 },
@@ -453,9 +453,9 @@ namespace StoryBook {
                 { element: Enemies.redPlane, after: 0, times: 3, v: 60, pos: 80, offset: 0, delay: 5, direction: Direction.LEFT },
 
                 { element: Elements.cloud1, after: 0, times: 2, v: 20, pos: 30, offset: 70, delay: 20 },
-                { element: Enemies.combatHelicopter, times: 3, after: 70, v: 15, pos: 30, offset: 50, delay: 0, direction: Direction.UP },
+                { element: Enemies.combatHelicopter, times: 3, after: 40, v: 15, pos: 30, offset: 50, delay: 0, direction: Direction.UP },
                 { element: Elements.cloud2, after: 0, times: 2, v: 20, pos: 50, offset: 50, delay: 40 },
-                { element: Enemies.combatHelicopter, times: 2, after: 80, v: 15, pos: 30, offset: 30, delay: 10, direction: Direction.LEFT },
+                { element: Enemies.combatHelicopter, times: 2, after: 40, v: 15, pos: 30, offset: 30, delay: 10, direction: Direction.LEFT },
                 { element: Enemies.combatHelicopter, times: 2, after: 0, v: 15, pos: 30, offset: 30, delay: 10, direction: Direction.RIGHT },
             ])
             .build()
