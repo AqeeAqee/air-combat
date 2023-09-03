@@ -131,28 +131,26 @@ namespace StoryBook {
         const halfHeight: number = scene.screenHeight() / 2;
 
         return gameBuilder
-        /*
-        .nextLevel("test level").with([
-                    { element: Enemies.battleShip, after: 0, direction:Direction.DOWN, times: 1, v: 10, pos: 88, offset: 30, delay: 15 },
-                    { element: Enemies.battleShip, after: 20, direction:Direction.LEFT, times: 1, v: 10, pos: 22, offset: 30, delay: 15 },
-                    
-                    { element: Enemies.carrier2, after: 50, times: 1, v: 33, f: 4, pos: 20, offset: 30, delay: 15 },
-                    { element: Enemies.carrier3, after: 50, times: 1, v: 34, f: 4, pos: 140, offset: 30, delay: 15 },
-                    { element: Enemies.carrier, after: 0, times: 1, v: 34, f: 4, pos: 80, offset: 30, delay: 15 },
-                    { element: Elements.cloud1, after: 100, v: 30, pos: 120 },
-                    
-                    { element: Enemies.redPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
-                    { element: Enemies.greenPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
-                    { element: Enemies.grayPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
-                    { element: Enemies.bigPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
-                    { element: Enemies.bomberPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
-                    { element: Enemies.combatHelicopter, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
-                    { element: Enemies.frigate, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
-                    { element: Enemies.battleShip, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
-                    { element: Enemies.tank, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
-                    { element: Enemies.antiAircraftTower, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
-                ]).build()
-                */
+        // .nextLevel("test level").with([
+            // { element: Enemies.carrier, after: 0, times: 1, v: 34, f: 4, pos: 80, offset: 30, delay: 15 },
+            // { element: Enemies.carrier2, after: 50, times: 1, v: 33, f: 4, pos: 20, offset: 30, delay: 15 },
+            // { element: Enemies.carrier3, after: 0, times: 1, v: 34, f: 4, pos: 140, offset: 30, delay: 15 },
+            // { element: Elements.cloud1, after: 100, v: 30, pos: 120 },
+            
+            // { element: Enemies.battleShip, after: 0, direction:Direction.DOWN, times: 1, v: 10, pos: 88, offset: 30, delay: 15 },
+            // { element: Enemies.battleShip, after: 20, direction:Direction.LEFT, times: 1, v: 10, pos: 22, offset: 30, delay: 15 },
+            
+            // { element: Enemies.redPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+            // { element: Enemies.greenPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+            // { element: Enemies.grayPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+            // { element: Enemies.bigPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+            // { element: Enemies.bomberPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+            // { element: Enemies.combatHelicopter, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+            // { element: Enemies.frigate, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+            // { element: Enemies.battleShip, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+            // { element: Enemies.tank, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+            // { element: Enemies.antiAircraftTower, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
+        // ]).build()
             .nextLevel("Air attack").with([
                 { element: Elements.cloud1, after: 10, v: 30, pos: 120 },
                 { element: Elements.cloud1, after: 10, v: 35, pos: 60 },

@@ -1095,6 +1095,56 @@ class BattleShip extends Ship implements Enemy {
     }
 }
 
+class CarrierPlane {
+    spawnStep = -15 //-50
+    static takeoffStep = 15
+    
+    plane: BaseEnemy
+    intervalHandle:number
+
+    constructor(private level:number, private mov:Movement) {
+
+        this.intervalHandle= control.setInterval(()=>this.updateBaby(), 100, control.IntervalMode.Interval)
+        
+    }
+
+    updateBaby() {
+        if (this.spawnStep == 0) {
+            if (this.level == 1)
+                this.plane = new GreenPlane(this.mov)
+            else if (this.level == 2)
+                this.plane = new RedPlane(this.mov)
+            else if (this.level == 3)
+                this.plane = new GrayPlane(this.mov)
+        
+            this.plane.sprite.scale = 0.2
+            this.plane.sprite.ay = -56
+            this.plane.sprite.setFlag(SpriteFlag.AutoDestroy, false);
+            this.plane.sprite.setFlag(SpriteFlag.Ghost, true);
+            const img = this.plane.sprite.image.clone()
+            img.flipY()
+            this.plane.sprite.setImage(img)
+
+        } else if (0 < this.spawnStep && this.spawnStep < CarrierPlane.takeoffStep) {
+            this.plane.sprite.scale = 0.2 + 0.8 * this.spawnStep / CarrierPlane.takeoffStep
+        } else if (this.spawnStep == CarrierPlane.takeoffStep) {
+            const img = this.plane.sprite.image
+            img.flipY()
+            this.plane.sprite.setImage(img)
+            this.plane.sprite.setFlag(SpriteFlag.Ghost, false);
+            this.plane.sprite.ay = 0
+            this.plane.sprite.vy = 40
+            // this.baby.sprite.vx = ((Math.pickRandom(Players.players).sprite.x)-this.baby.sprite.x) * this.baby.sprite.vy / (screen.height)
+            this.plane.sprite.vx = ((Math.randomRange(0,screen.width))-this.plane.sprite.x) * this.plane.sprite.vy / (screen.height)
+        } else if (this.spawnStep == 25) {
+            this.plane.sprite.setFlag(SpriteFlag.AutoDestroy, true);
+            control.clearInterval(this.intervalHandle, control.IntervalMode.Interval)
+        }
+        this.spawnStep++
+    }
+
+}
+
 class Carrier extends Ship implements Enemy{
     private static readonly image: Image = img`
         ............66666666666666666666666..........
@@ -1228,58 +1278,26 @@ class Carrier extends Ship implements Enemy{
     constructor(mov: Movement, level = 1) {
         super(Carrier.image, mov, 100);
         this.subKind = EnemySubKind.Carrier
-        this.sprite.setFlag(SpriteFlag.Ghost, true);
+        // this.sprite.setFlag(SpriteFlag.Ghost, true);
         this.sprite.z = 0
 
-        let baby: BaseEnemy
+        this.sprite._hitbox=new game.Hitbox(this.sprite, Fx8(5),Fx8(21),Fx8(31),Fx8(57))
         let babyCount = 0
-        let spawnStep = -45 //-50
-        const takeoffStep = 15
         
-        // this.sprite.onDestroyed(()=>baby.sprite.destroy())
-        
-        this.onUpdateInterval(100, () => {
-            if (babyCount >= level * 5) {
-                this.sprite.setFlag(SpriteFlag.Ghost, false);
-                this.sprite.setFlag(SpriteFlag.AutoDestroy, true);
-                this.sprite.vy = 5
-                this.sprite.ay = 15
+        this.onUpdateInterval(500, () => {
+            if (babyCount >= level * 4) {
+                // this.sprite.setFlag(SpriteFlag.Ghost, false);
+                // this.sprite.setFlag(SpriteFlag.AutoDestroy, true);
                 this.sprite.fy = 0
-            } else {
-                spawnStep++
-                if (spawnStep == 0) {
-                    const mov = {
-                        startX: this.sprite.x, startY: (this.sprite.y + this.sprite.bottom) >> 1, vx: this.sprite.vx,
-                        vy: -22
-                    }
-                    if (level == 1)
-                        baby = new GreenPlane(mov)
-                    else if (level == 2)
-                        baby = new RedPlane(mov)
-                    else if (level == 3)
-                        baby = new GrayPlane(mov)
-                    baby.sprite.scale = 0.5
-                    baby.sprite.ay = -56
-                    baby.sprite.setFlag(SpriteFlag.AutoDestroy, false);
-                    baby.sprite.setFlag(SpriteFlag.Ghost, true);
-                    const img = baby.sprite.image.clone()
-                    img.flipY()
-                    baby.sprite.setImage(img)
-                } else if (0 < spawnStep && spawnStep < takeoffStep) {
-                    baby.sprite.scale = 0.2 + 0.8 / takeoffStep * spawnStep
-                } else if (spawnStep == takeoffStep) {
-                    const img = baby.sprite.image
-                    img.flipY()
-                    baby.sprite.setImage(img)
-                    baby.sprite.setFlag(SpriteFlag.Ghost, false);
-                    baby.sprite.ay = 0
-                    baby.sprite.vx = Math.randomRange(-10, 10)
-                    baby.sprite.vy = Math.randomRange(20, 40)
-                } else if (spawnStep == 25) {
-                    babyCount++
-                    baby.sprite.setFlag(SpriteFlag.AutoDestroy, true);
-                    spawnStep = -1
+                this.sprite.ay = 20 
+            } else if(this.sprite.y>(Carrier.image.height>>2)) {
+                const mov = {
+                    startX: this.sprite.x, startY: (this.sprite.y + this.sprite.bottom) >> 1,
+                    vx: this.sprite.vx- (babyCount%2==1?10:0),
+                    vy: -22
                 }
+                new CarrierPlane(level, mov)
+                babyCount++
             }
         });
     }
