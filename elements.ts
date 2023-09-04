@@ -334,7 +334,7 @@ abstract class BaseEnemy extends BaseObject {
         }
         icon.flipY()
         return icon
-}
+    }
 
     public getScore(): number {
         return 10;
@@ -397,6 +397,9 @@ abstract class Plane extends BaseEnemy {
         super(image, mov, hits);
         this.sprite.z = cloudZ + 10; // above the clouds
     }
+
+    public shoot(): void {
+    }
 }
 
 class Tank extends Vehicle implements Enemy {
@@ -427,7 +430,7 @@ class Tank extends Vehicle implements Enemy {
         });
     }
 
-    private shoot(): void {
+    public shoot(): void {
         const a = angleBetween(this.sprite, Players.randomPlayer().getSprite());
         for (let angle of [a - toRadian(15), a, a + toRadian(15)]) {
             const v = vComponents(30, angle);
@@ -650,6 +653,11 @@ class CombatHelicopter extends Plane implements Enemy {
 }
 
 class GreenPlane extends Plane implements Enemy {
+    private static readonly projectileImage: Image = img`
+        . 2 .
+        2 f 2
+        . 2 .
+    `;
     private static readonly image: Image = img`
         . . . . . . . 7 7 . . . . . . .
         . . . . 7 7 6 7 7 6 7 7 . . . .
@@ -670,9 +678,19 @@ class GreenPlane extends Plane implements Enemy {
         this.subKind = EnemySubKind.GreenPlane
         this.sprite.z = cloudZ - 10; // below the clouds
     }
+
+    public shoot(): void {
+        const projectile = sprites.createProjectile(GreenPlane.projectileImage, this.sprite.vx<<1, this.sprite.vy<<1, SpriteKind.EnemyProjectile, this.sprite);
+    }
+
 }
 
 class RedPlane extends Plane implements Enemy {
+    private static readonly projectileImage: Image = img`
+        . 2 .
+        2 f 2
+        . 2 .
+    `;
     private static readonly image: Image = img`
         . . . . . . . 2 . . . . . . . .
         . . . . . . . 2 . . . . . . . .
@@ -694,6 +712,12 @@ class RedPlane extends Plane implements Enemy {
         super(RedPlane.image, mov);
         this.subKind = EnemySubKind.RedPlane
     }
+
+    public shoot(): void {
+        const projectile = sprites.createProjectile(RedPlane.projectileImage, this.sprite.vx << 1, this.sprite.vy << 1, SpriteKind.EnemyProjectile, this.sprite);
+        projectile.setPosition(Math.max(projectile.x, 0), Math.max(projectile.y, 0));
+    }
+
 }
 
 class GrayPlane extends Plane implements Enemy {
@@ -731,33 +755,31 @@ class GrayPlane extends Plane implements Enemy {
         this.shoot();
     }
 
-    private shoot(): void {
-        if (isRelativeMovement(this.movement)) {
-            let vx = 50 * Math.sign(this.sprite.vx);
-            let vy = 50 * Math.sign(this.sprite.vy);
-            let ax = 200 * Math.sign(this.sprite.vx);
-            let ay = 200 * Math.sign(this.sprite.vy);
+    public shoot(): void {
+        const spr = this.sprite
+        let dir: Direction
+        if (isRelativeMovement(this.movement))
+            dir = this.movement.direction
+        else
+            dir = (spr.vx > spr.vy) ? (spr.vx > 0 ? Direction.LEFT : Direction.RIGHT) : (spr.vy > 0 ? Direction.DOWN : Direction.UP)
+        
+        const projectile = sprites.createProjectile(
+            rotate(GrayPlane.projectileImage, dir),
+            50 * Math.sign(spr.vx),
+            50 * Math.sign(spr.vy),
+            SpriteKind.EnemyProjectile,
+            spr
+        );
+        projectile.ax = 200 * Math.sign(spr.vx);
+        projectile.ay = 200 * Math.sign(spr.vy);
 
-            const projectile = sprites.createProjectile(
-                rotate(GrayPlane.projectileImage, this.movement.direction),
-                vx,
-                vy,
-                SpriteKind.EnemyProjectile,
-                this.sprite
-            );
-            projectile.ax = ax;
-            projectile.ay = ay;
-
-            // Make sure the projectile is on the screen so
-            // that it does not get auto destoryed immediately
-            let x = projectile.x, y = projectile.y;
-            switch (this.movement.direction) {
-                case Direction.DOWN: y = 1; break;
-                case Direction.UP: y = scene.screenHeight(); break;
-                case Direction.LEFT: x = scene.screenWidth(); break;
-                case Direction.RIGHT: x = 0; break;
-            }
-            projectile.setPosition(x, y);
+        // Make sure the projectile is on the screen so
+        // that it does not get auto destoryed immediately
+        switch (dir) {
+            case Direction.DOWN: projectile.y = 1; break;
+            case Direction.UP: projectile.y = scene.screenHeight(); break;
+            case Direction.LEFT: projectile.x = scene.screenWidth(); break;
+            case Direction.RIGHT: projectile.x = 0; break;
         }
     }
 
@@ -803,7 +825,7 @@ class BigPlane extends Plane implements Enemy {
         });
     }
 
-    private shoot(): void {
+    public shoot(): void {
         let vx = 70 * Math.sign(this.sprite.vx);
         let vy = 70 * Math.sign(this.sprite.vy);
         const projectile = sprites.createProjectile(BigPlane.projectileImage, vx, vy, SpriteKind.EnemyProjectile, this.sprite);
@@ -909,7 +931,7 @@ class Frigate extends Ship implements Enemy {
         });
     }
 
-    private shoot(): void {
+    public shoot(): void {
         const a = angleBetween(this.sprite, Players.randomPlayer().getSprite());
 
         const v = vComponents(30, a);
@@ -1031,10 +1053,11 @@ class BattleShip extends Ship implements Enemy {
     `;
 
     constructor(mov: Movement, level = 1) {
-        super(BattleShip.image, mov, 30);
+        super(BattleShip.image, mov, 80);
         this.subKind = EnemySubKind.BattleShip
         // this.onUpdateInterval(2000, () => this.shoot());
-        this.sprite.z = 1
+        this.sprite.z = 0
+        this.sprite._hitbox = new game.Hitbox(this.sprite, Fx8(12), Fx8(12), Fx8(13), Fx8(48))
         const parkingOffset = 28
 
         let baby: BaseEnemy
@@ -1084,7 +1107,7 @@ class BattleShip extends Ship implements Enemy {
         });
     }
 
-    private shoot(): void {
+    public shoot(): void {
         const a = angleBetween(this.sprite, Players.randomPlayer().getSprite());
         const v = vComponents(100, a);
         sprites.createProjectile(BattleShip.projectileImage, v.vx, v.vy, SpriteKind.EnemyProjectile, this.sprite);
@@ -1099,7 +1122,7 @@ class CarrierPlane {
     spawnStep = -15 //-50
     static takeoffStep = 15
     
-    plane: BaseEnemy
+    plane: Plane
     intervalHandle:number
 
     constructor(private level:number, private mov:Movement) {
@@ -1136,6 +1159,7 @@ class CarrierPlane {
             this.plane.sprite.vy = 40
             // this.baby.sprite.vx = ((Math.pickRandom(Players.players).sprite.x)-this.baby.sprite.x) * this.baby.sprite.vy / (screen.height)
             this.plane.sprite.vx = ((Math.randomRange(0,screen.width))-this.plane.sprite.x) * this.plane.sprite.vy / (screen.height)
+            this.plane.shoot()
         } else if (this.spawnStep == 25) {
             this.plane.sprite.setFlag(SpriteFlag.AutoDestroy, true);
             control.clearInterval(this.intervalHandle, control.IntervalMode.Interval)

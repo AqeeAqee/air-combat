@@ -131,15 +131,15 @@ namespace StoryBook {
         const halfHeight: number = scene.screenHeight() / 2;
 
         return gameBuilder
-        // .nextLevel("test level").with([
+            // .nextLevel("test level").with([
             // { element: Enemies.carrier, after: 0, times: 1, v: 34, f: 4, pos: 80, offset: 30, delay: 15 },
             // { element: Enemies.carrier2, after: 50, times: 1, v: 33, f: 4, pos: 20, offset: 30, delay: 15 },
             // { element: Enemies.carrier3, after: 0, times: 1, v: 34, f: 4, pos: 140, offset: 30, delay: 15 },
             // { element: Elements.cloud1, after: 100, v: 30, pos: 120 },
-            
+
             // { element: Enemies.battleShip, after: 0, direction:Direction.DOWN, times: 1, v: 10, pos: 88, offset: 30, delay: 15 },
             // { element: Enemies.battleShip, after: 20, direction:Direction.LEFT, times: 1, v: 10, pos: 22, offset: 30, delay: 15 },
-            
+
             // { element: Enemies.redPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
             // { element: Enemies.greenPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
             // { element: Enemies.grayPlane, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
@@ -150,7 +150,7 @@ namespace StoryBook {
             // { element: Enemies.battleShip, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
             // { element: Enemies.tank, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
             // { element: Enemies.antiAircraftTower, after: 20, times: 1, v: 10, pos: 95, offset: 30, delay: 15 },
-        // ]).build()
+            // ]).build()
             .nextLevel("Air attack").with([
                 { element: Elements.cloud1, after: 10, v: 30, pos: 120 },
                 { element: Elements.cloud1, after: 10, v: 35, pos: 60 },
@@ -162,7 +162,7 @@ namespace StoryBook {
                 { element: Elements.cloud1, after: 5, v: 25, pos: 120 },
                 { element: Elements.island1, after: 10, times: 2, v: 10, pos: 10, offset: -50 },
                 { element: Enemies.redPlane, after: 15, v: 60, pos: 70, direction: Direction.RIGHT },
-                { element: Enemies.redPlane, v: 60, pos: 90, direction: Direction.LEFT },
+                { element: Enemies.redPlane, v: 60, pos: 50, direction: Direction.LEFT },
                 { element: Elements.cloud1, after: 20, v: 35, pos: 20 },
                 { element: Elements.cloud1, after: 10, v: 25, pos: 60 },
                 { element: Enemies.grayPlane, after: 10, v: 80, pos: 40, direction: Direction.LEFT },
@@ -193,7 +193,7 @@ namespace StoryBook {
                 { element: Enemies.grayPlane, after: 0, v: 100, pos: 45, direction: Direction.RIGHT },
                 { element: Enemies.grayPlane, after: 7, v: 100, pos: 20, direction: Direction.LEFT },
                 { element: Enemies.grayPlane, after: 0, v: 100, pos: 25, direction: Direction.RIGHT },
-                    
+
                 { element: Enemies.carrier, after: 10, times: 1, v: 34, f: 4, pos: 80, offset: 30, delay: 15 },
             ])
             .build()
@@ -232,7 +232,7 @@ namespace StoryBook {
                 { element: Elements.cloud1, after: 70, times: 2, v: 20, pos: 120, offset: 0, delay: 20 },
                 { element: Elements.cloud2, v: 5, pos: 20 },
                 { element: Elements.cloud2, after: 30, v: 5, pos: 30 },
-                { element: Enemies.battleShip, after: 30, v: 15, pos: 30 },
+                { element: Enemies.battleShip, after: 30, v: 15, pos: 50, direction:Direction.LEFT },
             ])
             .build()
 
@@ -346,7 +346,7 @@ namespace StoryBook {
                 { element: Enemies.redPlane, after: 0, v: 35, pos: scene.screenWidth() - 25, direction: Direction.UP },
                 { element: Enemies.redPlane, after: 0, v: 50, pos: scene.screenHeight() - 25, direction: Direction.LEFT },
 
-                { element: Enemies.carrier3, after: 20, times: 1, v: 34, f: 4, pos: 80, offset: 30, delay: 15 },
+                { element: Enemies.battleShip, after: 10, v: 15, pos: 60 },
             ])
             .build()
 
@@ -411,6 +411,8 @@ namespace StoryBook {
                 { element: Enemies.grayPlane, after: 50, times: 2, v: 70, delay: 0, pos: 50, offset: 60 },
                 { element: Enemies.grayPlane, after: 7, v: 70, delay: 0, pos: halfWidth, offset: 0 },
                 { element: Enemies.grayPlane, after: 7, times: 2, v: 70, delay: 0, pos: 50, offset: 60 },
+
+                { element: Enemies.carrier3, after: 10, times: 1, v: 34, f: 4, pos: 80, offset: 30, delay: 15 },
             ])
             .build()
 
@@ -455,6 +457,9 @@ namespace StoryBook {
                 { element: Elements.cloud2, after: 0, times: 2, v: 20, pos: 50, offset: 50, delay: 40 },
                 { element: Enemies.combatHelicopter, times: 2, after: 40, v: 15, pos: 30, offset: 30, delay: 10, direction: Direction.LEFT },
                 { element: Enemies.combatHelicopter, times: 2, after: 0, v: 15, pos: 30, offset: 30, delay: 10, direction: Direction.RIGHT },
+
+                { element: Enemies.battleShip, after: 10, v: 15, pos: 30, direction:Direction.LEFT },
+                { element: Enemies.carrier2, after: 180, pos: 30, v: 34, f: 4, times: 1, offset: 80, delay: 15 },
             ])
             .build()
 
@@ -497,6 +502,10 @@ namespace StoryBook {
 
                 { element: Elements.cloud2, after: 50, times: 3, v: 15, pos: 30, offset: 45, delay: 0 },
                 { element: Enemies.bomberPlane, after: 7, times: 3, v: 20, pos: halfWidth - 70, offset: 70 },
+
+                { element: Enemies.carrier2, after: 20, times: 1, v: 34, f: 4, pos: 30, offset: 30, delay: 15 },
+                { element: Enemies.battleShip, after: 80, v: 15, pos: 120 },
+                { element: Enemies.carrier3, after: 90, times: 1, v: 34, f: 4, pos: 50, offset: 30, delay: 15 },
             ])
             .build()
             .levels;
@@ -519,17 +528,25 @@ namespace StoryBook {
         Players.create()
 
         const designedLevels = setup();
-        let currentLevel = designedLevels.shift();
 
         // for testing 
-        // while(designedLevels.length>0)
+        // for(let i=0;i<6;i++)
         //     designedLevels.shift()
         // currentLevel=randomLevels().shift()
+
+        let currentLevel = designedLevels.shift();
 
         levelInfo(currentLevel);
         onLevelBegin()
         let clearedTick = 0;
         let ticks = 0;
+
+        //for testing
+        // while(currentLevel.storyBook.length>1){
+        //     currentLevel.storyBook.shift()
+        // }
+        // ticks=currentLevel.storyBook[0].t-10
+
         game.onUpdateInterval(hardcore ? 60 : 100, () => {
             ticks++;
 
@@ -543,11 +560,12 @@ namespace StoryBook {
                 if (!clearedTick) {
                     if (SpriteWrapper.all().every((v) => !(v instanceof BaseEnemy))) {
                         clearedTick = ticks;
-                        onLevelComplete()
                     }
-                } else if (ticks > clearedTick + 20) {// End of level
+                } else if (ticks == clearedTick + 20) {
+                    onLevelComplete()
+                } else if (ticks > clearedTick + 40) {// End of level
                     // 10s after the last element has been created
-                    
+
                     summary.show()
                     summary.clear()
 
@@ -579,8 +597,8 @@ namespace StoryBook {
                 direction: elementGroup == 1 ? Direction.DOWN : Math.pickRandom([Direction.UP, Direction.LEFT, Direction.DOWN, Direction.RIGHT]),
                 offset: Math.randomRange(20, 40)
             })
-            if (elements[elements.length - 1].element.color == 7){//tank, add island
-                elements.insertAt(elements.length - 1,{
+            if (elements[elements.length - 1].element.color == 7) {//tank, add island
+                elements.insertAt(elements.length - 1, {
                     element: elementTypes[1][Math.randomRange(3, 6)], //Math.randomRange(0, 16) //Enemies.greenPlane,
                     after: elements[elements.length - 1].after,
                     times: 1,
@@ -589,7 +607,7 @@ namespace StoryBook {
                     direction: Direction.DOWN,
                     offset: elements[elements.length - 1].offset
                 })
-                elements[elements.length - 1].after=20
+                elements[elements.length - 1].after = 20
             }
         }
         return gameBuilder.nextLevel("Random Generated Level").with(elements).build().levels
