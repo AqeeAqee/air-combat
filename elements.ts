@@ -749,10 +749,11 @@ class GrayPlane extends Plane implements Enemy {
         . . . . . . . . . . . . . . . .
     `;
 
-    constructor(mov: Movement) {
+    constructor(mov: Movement, level=0) {
         super(GrayPlane.image, mov, 2);
         this.subKind = EnemySubKind.GrayPlane
-        this.shoot();
+        if(level==0)
+            this.shoot();
     }
 
     public shoot(): void {
@@ -761,12 +762,12 @@ class GrayPlane extends Plane implements Enemy {
         if (isRelativeMovement(this.movement))
             dir = this.movement.direction
         else
-            dir = (spr.vx > spr.vy) ? (spr.vx > 0 ? Direction.LEFT : Direction.RIGHT) : (spr.vy > 0 ? Direction.DOWN : Direction.UP)
+            dir = (Math.abs(spr.vx) > Math.abs(spr.vy)) ? (spr.vx > 0 ? Direction.LEFT : Direction.RIGHT) : (spr.vy > 0 ? Direction.DOWN : Direction.UP)
         
         const projectile = sprites.createProjectile(
             rotate(GrayPlane.projectileImage, dir),
-            50 * Math.sign(spr.vx),
-            50 * Math.sign(spr.vy),
+            (dir==Direction.LEFT||dir==Direction.RIGHT)? 50 * Math.sign(spr.vx):0,
+            (dir == Direction.UP || dir == Direction.DOWN) ?50 * Math.sign(spr.vy):0,
             SpriteKind.EnemyProjectile,
             spr
         );
@@ -1119,16 +1120,15 @@ class BattleShip extends Ship implements Enemy {
 }
 
 class CarrierPlane {
-    spawnStep = -15 //-50
-    static takeoffStep = 15
+    spawnStep = -3
+    static readonly takeoffTick = 15
+    static readonly shootTick=CarrierPlane.takeoffTick+2
     
     plane: Plane
     intervalHandle:number
 
     constructor(private level:number, private mov:Movement) {
-
         this.intervalHandle= control.setInterval(()=>this.updateBaby(), 100, control.IntervalMode.Interval)
-        
     }
 
     updateBaby() {
@@ -1138,27 +1138,29 @@ class CarrierPlane {
             else if (this.level == 2)
                 this.plane = new RedPlane(this.mov)
             else if (this.level == 3)
-                this.plane = new GrayPlane(this.mov)
-        
+                this.plane = new GrayPlane(this.mov, 1)
+
+            this.plane.setOnDestroyed(() => control.clearInterval(this.intervalHandle, control.IntervalMode.Interval))
             this.plane.sprite.scale = 0.2
-            this.plane.sprite.ay = -56
+            this.plane.sprite.ay = -40
             this.plane.sprite.setFlag(SpriteFlag.AutoDestroy, false);
             this.plane.sprite.setFlag(SpriteFlag.Ghost, true);
             const img = this.plane.sprite.image.clone()
             img.flipY()
             this.plane.sprite.setImage(img)
 
-        } else if (0 < this.spawnStep && this.spawnStep < CarrierPlane.takeoffStep) {
-            this.plane.sprite.scale = 0.2 + 0.8 * this.spawnStep / CarrierPlane.takeoffStep
-        } else if (this.spawnStep == CarrierPlane.takeoffStep) {
+        } else if (0 < this.spawnStep && this.spawnStep < CarrierPlane.takeoffTick) {
+            this.plane.sprite.scale = 0.2 + 0.8 * this.spawnStep / CarrierPlane.takeoffTick
+        } else if (this.spawnStep == CarrierPlane.takeoffTick) {
             const img = this.plane.sprite.image
             img.flipY()
             this.plane.sprite.setImage(img)
             this.plane.sprite.setFlag(SpriteFlag.Ghost, false);
-            this.plane.sprite.ay = 0
+            this.plane.sprite.ay = 11
             this.plane.sprite.vy = 40
             // this.baby.sprite.vx = ((Math.pickRandom(Players.players).sprite.x)-this.baby.sprite.x) * this.baby.sprite.vy / (screen.height)
             this.plane.sprite.vx = ((Math.randomRange(0,screen.width))-this.plane.sprite.x) * this.plane.sprite.vy / (screen.height)
+        } else if (this.spawnStep == CarrierPlane.shootTick) {
             this.plane.shoot()
         } else if (this.spawnStep == 25) {
             this.plane.sprite.setFlag(SpriteFlag.AutoDestroy, true);
@@ -1309,11 +1311,11 @@ class Carrier extends Ship implements Enemy{
         let babyCount = 0
         
         this.onUpdateInterval(500, () => {
-            if (babyCount >= level * 4) {
+            if (babyCount >= level * 4+2) {
                 // this.sprite.setFlag(SpriteFlag.Ghost, false);
                 // this.sprite.setFlag(SpriteFlag.AutoDestroy, true);
                 this.sprite.fy = 0
-                this.sprite.ay = 20 
+                this.sprite.ay = 15 
             } else if(this.sprite.y>(Carrier.image.height>>2)) {
                 const mov = {
                     startX: this.sprite.x, startY: (this.sprite.y + this.sprite.bottom) >> 1,

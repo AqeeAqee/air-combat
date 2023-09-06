@@ -532,9 +532,9 @@ namespace StoryBook {
         // for testing 
         // for(let i=0;i<6;i++)
         //     designedLevels.shift()
-        // currentLevel=randomLevels().shift()
 
         let currentLevel = designedLevels.shift();
+        // currentLevel=randomLevels().shift()
 
         levelInfo(currentLevel);
         onLevelBegin()
@@ -542,9 +542,8 @@ namespace StoryBook {
         let ticks = 0;
 
         //for testing
-        // while(currentLevel.storyBook.length>1){
+        // while(currentLevel.storyBook.length>1)
         //     currentLevel.storyBook.shift()
-        // }
         // ticks=currentLevel.storyBook[0].t-10
 
         game.onUpdateInterval(hardcore ? 60 : 100, () => {
