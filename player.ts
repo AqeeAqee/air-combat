@@ -1,7 +1,7 @@
 class Player extends SpriteWrapper.Support {
     private static readonly MAX_LIFES = 5;
     private hits = 0;
-    private bombs = 0;
+    public bombs = 0;
     private weaponLevel = 1;
     private weaponKind = SpriteKind.WeaponPowerup;//aqee, for multi kind of weapons
     private timeHitable = 0;
@@ -422,10 +422,7 @@ namespace Players {
         players[1].spawnX = scene.screenWidth() / 2 + 30
 
         controller.player1.A.onEvent(ControllerButtonEvent.Pressed, () => {
-            if (players[1].isAbsence)
-                players[Math.randomRange(0,1)].dropBomb()
-            else
-                players[0].dropBomb()
+            players[ (players[1].isAbsence && players[0].bombs <= 0)? 1:0].dropBomb()
         })
 
         controller.player1.B.onEvent(ControllerButtonEvent.Repeated, () => {

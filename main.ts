@@ -16,6 +16,7 @@ StoryBook.play();
 /** Change Log, Aqee Li
 2023-8
 add lightning for bomb
+spawn plane on carrier
 spawn helicopter on battle ship
 scored by the player hit more, intead of last shot
 fix btn events
@@ -28,8 +29,8 @@ fix max 4 bomb to 3
 fix copilot z-index over pilot when following
 2022-12
 adds/changes:
-always 2 plyers
-add title scene (handmade)
+always 2 plyers on sim or RPi
+add title scene (handdrawing)
 add progress bar, diff colors for each kind of enemies
 change 2nd player plane to green
 co-pilot mode(removed player count choose), effect whenever 2nd player without input for 5s, press any btn exit.
@@ -53,7 +54,6 @@ bigplane missing when moving left/right: w/h should swap after transposed image
 perf tune, avoid set fire effect of enemy repeatly
 
 TODO:
-add aircraft carrier
 load only one level a time, for save memory of device
 tune FPS.
  */
