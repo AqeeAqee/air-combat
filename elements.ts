@@ -776,12 +776,12 @@ class GrayPlane extends Plane implements Enemy {
 
         // Make sure the projectile is on the screen so
         // that it does not get auto destoryed immediately
-        switch (dir) {
-            case Direction.DOWN: projectile.y = 1; break;
-            case Direction.UP: projectile.y = scene.screenHeight(); break;
-            case Direction.LEFT: projectile.x = scene.screenWidth(); break;
-            case Direction.RIGHT: projectile.x = 0; break;
-        }
+        // switch (dir) {
+        //     case Direction.DOWN: projectile.y = 1; break;
+        //     case Direction.UP: projectile.y = scene.screenHeight(); break;
+        //     case Direction.LEFT: projectile.x = scene.screenWidth(); break;
+        //     case Direction.RIGHT: projectile.x = 0; break;
+        // }
     }
 
     public getScore(): number {
